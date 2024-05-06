@@ -14,8 +14,8 @@ namespace Csharp81
     public class ZX81
     {
 
-        public Stopwatch timer = new Stopwatch();
-        public DateTime StartTime;
+        private Stopwatch _timer = new Stopwatch();
+        private DateTime _startTime;
 
         public int glTstatesPerInterrupt;
 
@@ -23,9 +23,9 @@ namespace Csharp81
         public bool bBooting;
         public int glInterruptTimer;
         
-        public int[] sLastScreen = new int[768];
+        public int[] LastScreen = new int[768];
         public int lHiresLoc; // // location in ZX81's memory of the hi-res displayfile
-        public int[,] cLastHiResScreen; //= new int[192, 32];
+        public int[,] LastHiResScreen; //= new int[192, 32];
 
         
         public Color backGroundColour;
@@ -38,12 +38,7 @@ namespace Csharp81
         public bool bHideInFastMode;
         public bool bDisplayIsShowing;
 
-        // Public sTapeDir As String
-
-        // // Other settings
         public bool bAllowWritesToROM;
-
-        // // Global picDisplay variable to speed things up
 
         public Graphics picDisplayGraphics;
         public Bitmap displayBitmap;
@@ -51,32 +46,38 @@ namespace Csharp81
 
         public int DisplaySize;
 
-       
-
-        private Memory _mem;
-        private Form _form;
-        private KeyPresses _kb;
-        public PictureBox _disp;
+        private Memory _zx81Memory;
+        private Form _mainForm;
+        public PictureBox _display;
 
         public string sTapeDir;
+
+
+        public int keyB_SPC;
+        public int keyH_ENT;
+        public int keyY_P;
+        public int key6_0;
+        public int key1_5;
+        public int keyQ_T;
+        public int keyA_G;
+        public int keyCAPS_V;
+
 
         const int TimeDelay = 15;  // time delay factor to make emulation run at ZX81 speed
                                    // // PERFORM Z80 hardware functions (mimicking the NMI on a real ZX81)
 
-        public ZX81(Memory mem, PictureBox picDisplay, KeyPresses keys,Form form)
+        public ZX81(Memory mem, PictureBox picDisplay,Form form)
         {
-            _kb = keys;
-            _disp = picDisplay;
-            _mem = mem;
-            _form = form;
+
+            _display = picDisplay;
+            _zx81Memory = mem;
+            _mainForm = form;
 
             backGroundColour = Properties.Settings.Default.stgBackColour;  // Item(Color.FromArgb(200, 200, 200)  'pale grey
             foreGroundColour = Properties.Settings.Default.stgForeColour;  // Color.FromArgb(0, 0, 0)  'black
             borderColour = Properties.Settings.Default.stgBorderColour;  // Color.FromArgb(200, 200, 200)  'pale grey '&HC0C0C0
             fastmodeColour = Properties.Settings.Default.stgFastModeColour; // Color.FromArgb(128, 128, 128)  'pale grey &H808080
 
-          //  DisplaySize = Properties.Settings.Default.stgDisplaySize;
-            //SetDisplaySize(DisplaySize);
             bHideTB = Properties.Settings.Default.stgHideTB;
             bAllowWritesToROM = Properties.Settings.Default.stgAllowWritesToRom;
             bHideInFastMode = Properties.Settings.Default.stgHideScreenInFastMode;
@@ -88,11 +89,8 @@ namespace Csharp81
             colours.Entries[1] = foreGroundColour;
             displayBitmap.Palette = colours;
             form.BackColor = borderColour;
-
-            // gpicDisplay = frmMainWnd.picDisplay
-            // gpicDisplayGraphics = frmMainWnd.picDisplay.CreateGraphics()
          
-            picDisplayGraphics =_disp.CreateGraphics();
+            picDisplayGraphics =_display.CreateGraphics();
             picDisplayGraphics.Clear(backGroundColour);
 
             glTstatesPerInterrupt = 160000;
@@ -101,24 +99,44 @@ namespace Csharp81
 
             sTapeDir = Properties.Settings.Default.stgTapeDir;
 
-            cLastHiResScreen = new int[192, 32];
+            LastHiResScreen = new int[192, 32];
 
             LoadROM();
             InstallROMHacks();
             CopyROM();
-            _kb.resetKeyboard();
+            ResetKeyboard();
 
-            timer.Start();
-            StartTime = DateTime.Now;
+            _timer.Start();
+            _startTime = DateTime.Now;
 
         }
+
+        public void ResetKeyboard()
+        {
+            keyB_SPC = 0xFF;
+            keyH_ENT = 0xFF;
+            keyY_P = 0xFF;
+            key6_0 = 0xFF;
+            key1_5 = 0xFF;
+            keyQ_T = 0xFF;
+            keyA_G = 0xFF;
+            keyCAPS_V = 0xFF;
+        }
+
+        public void zx81Reset()
+        {
+            
+        }
+
+
+
 
         public void CopyROM()
         {
             int iCounter;
 
             for (iCounter = 0; iCounter <= 8191; iCounter++)
-                _mem.pokebUnrestricted(iCounter + 8192,_mem.peekb(iCounter));
+                _zx81Memory.PokebUnrestricted(iCounter + 8192,_zx81Memory.Peekb(iCounter));
         }
 
 
@@ -130,26 +148,24 @@ namespace Csharp81
             Marshal.Copy(pixelArray, 0, bmpData.Scan0, pixelArray.Length);
             bmp3.UnlockBits(bmpData);
 
-            _disp.Image = displayBitmap;
+            _display.Image = displayBitmap;
             // frmMainWnd.Refresh() not needed if doevents is used to update screen and read keyboard
         }
-
-
         public bool doKey(bool down, KeyEventArgs e)
         {
             bool doKeyRet = default;
-            bool CAPS;
+            bool ShiftPressed;
             int ascii;
 
-            CAPS = e.Shift;
+            ShiftPressed = e.Shift;
 
-            if (CAPS)
+            if (ShiftPressed)
             {
-                _kb.keyCAPS_V = (_kb.keyCAPS_V & 0b11111110);
+                keyCAPS_V = (keyCAPS_V & 0b11111110);
             }
             else
             {
-                _kb.keyCAPS_V = (_kb.keyCAPS_V | 0b00000001);
+                keyCAPS_V = (keyCAPS_V | 0b00000001);
             }
             ascii = e.KeyValue;
 
@@ -159,15 +175,15 @@ namespace Csharp81
                     {
                         if (down)
                         {
-                            _kb.key6_0 = (_kb.key6_0 & 0b11111110);
-                            _kb.keyCAPS_V = (_kb.keyCAPS_V & 0b11111110);
+                            key6_0 = (key6_0 & 0b11111110);
+                            keyCAPS_V = (keyCAPS_V & 0b11111110);
                         }
                         else
                         {
-                            _kb.key6_0 = _kb.key6_0 | 0b00000001;
-                            if (!CAPS)
+                            key6_0 = key6_0 | 0b00000001;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
@@ -176,454 +192,454 @@ namespace Csharp81
                 case 16: // SHIFT
                     {
                         if (down)
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         else
-                            _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                            keyCAPS_V = keyCAPS_V | 0b00000001;
                         break;
                     }
                 case 65: // A
                     {
                         if (down)
-                            _kb.keyA_G = _kb.keyA_G & 0b11111110;
+                            keyA_G = keyA_G & 0b11111110;
                         else
-                            _kb.keyA_G = _kb.keyA_G | 0b00000001;
+                            keyA_G = keyA_G | 0b00000001;
                         break;
                     }
                 case 66: // B
                     {
                         if (down)
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11101111;
+                            keyB_SPC = keyB_SPC & 0b11101111;
                         else
-                            _kb.keyB_SPC = _kb.keyB_SPC | 0b00010000;
+                            keyB_SPC = keyB_SPC | 0b00010000;
                         break;
                     }
                 case 67: // C
                     {
                         if (down)
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11110111;
+                            keyCAPS_V = keyCAPS_V & 0b11110111;
                         else
-                            _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00001000;
+                            keyCAPS_V = keyCAPS_V | 0b00001000;
                         break;
                     }
                 case 68: // D
                     {
                         if (down)
-                            _kb.keyA_G = _kb.keyA_G & 0b11111011;
+                            keyA_G = keyA_G & 0b11111011;
                         else
-                            _kb.keyA_G = _kb.keyA_G | 0b00000100;
+                            keyA_G = keyA_G | 0b00000100;
                         break;
                     }
                 case 69: // E
                     {
                         if (down)
-                            _kb.keyQ_T = _kb.keyQ_T & 0b11111011;
+                            keyQ_T = keyQ_T & 0b11111011;
                         else
-                            _kb.keyQ_T = _kb.keyQ_T | 0b00000100;
+                            keyQ_T = keyQ_T | 0b00000100;
                         break;
                     }
                 case 70: // F
                     {
                         if (down)
-                            _kb.keyA_G = _kb.keyA_G & 0b11110111;
+                            keyA_G = keyA_G & 0b11110111;
                         else
-                            _kb.keyA_G = _kb.keyA_G | 0b00001000;
+                            keyA_G = keyA_G | 0b00001000;
                         break;
                     }
                 case 71: // G
                     {
                         if (down)
-                            _kb.keyA_G = _kb.keyA_G & 0b11101111;
+                            keyA_G = keyA_G & 0b11101111;
                         else
-                            _kb.keyA_G = _kb.keyA_G | 0b00010000;
+                            keyA_G = keyA_G | 0b00010000;
                         break;
                     }
                 case 72: // H
                     {
                         if (down)
-                            _kb.keyH_ENT = _kb.keyH_ENT & 0b11101111;
+                            keyH_ENT = keyH_ENT & 0b11101111;
                         else
-                            _kb.keyH_ENT = _kb.keyH_ENT | 0b00010000;
+                            keyH_ENT = keyH_ENT | 0b00010000;
                         break;
                     }
                 case 73: // I
                     {
                         if (down)
-                            _kb.keyY_P = _kb.keyY_P & 0b11111011;
+                            keyY_P = keyY_P & 0b11111011;
                         else
-                            _kb.keyY_P = _kb.keyH_ENT | 0b00000100;
+                            keyY_P = keyH_ENT | 0b00000100;
                         break;
                     }
                 case 74: // J
                     {
                         if (down)
-                            _kb.keyH_ENT = _kb.keyH_ENT & 0b11110111;
+                            keyH_ENT = keyH_ENT & 0b11110111;
                         else
-                            _kb.keyH_ENT = _kb.keyH_ENT |0b00001000;
+                            keyH_ENT = keyH_ENT |0b00001000;
                         break;
                     }
                 case 75: // K
                     {
                         if (down)
-                            _kb.keyH_ENT = _kb.keyH_ENT & 0b11111011;
+                            keyH_ENT = keyH_ENT & 0b11111011;
                         else
-                            _kb.keyH_ENT = _kb.keyH_ENT | 0b00000100;
+                            keyH_ENT = keyH_ENT | 0b00000100;
                         break;
                     }
                 case 76: // L
                     {
                         if (down)
-                            _kb.keyH_ENT = _kb.keyH_ENT & 0b11111101;
+                            keyH_ENT = keyH_ENT & 0b11111101;
                         else
-                            _kb.keyH_ENT = _kb.keyH_ENT | 0b00000010;
+                            keyH_ENT = keyH_ENT | 0b00000010;
                         break;
                     }
                 case 77: // M
                     {
                         if (down)
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11111011;
+                            keyB_SPC = keyB_SPC & 0b11111011;
                         else
-                            _kb.keyB_SPC = _kb.keyB_SPC | 0b00000100;
+                            keyB_SPC = keyB_SPC | 0b00000100;
                         break;
                     }
                 case 78: // N
                     {
                         if (down)
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11110111;
+                            keyB_SPC = keyB_SPC & 0b11110111;
                         else
-                            _kb.keyB_SPC = _kb.keyB_SPC | 0b00001000;
+                            keyB_SPC = keyB_SPC | 0b00001000;
                         break;
                     }
                 case 79: // O
                     {
                         if (down)
-                            _kb.keyY_P = _kb.keyY_P & 0b11111101;
+                            keyY_P = keyY_P & 0b11111101;
                         else
-                            _kb.keyY_P = _kb.keyY_P | 0b00000010;
+                            keyY_P = keyY_P | 0b00000010;
                         break;
                     }
                 case 80: // P
                     {
                         if (down)
-                            _kb.keyY_P = _kb.keyY_P & 0b11111110;
+                            keyY_P = keyY_P & 0b11111110;
                         else
-                            _kb.keyY_P = _kb.keyY_P | 0b00000001;
+                            keyY_P = keyY_P | 0b00000001;
                         break;
                     }
                 case 81: // Q
                     {
                         if (down)
-                            _kb.keyQ_T = _kb.keyQ_T & 0b11111110;
+                            keyQ_T = keyQ_T & 0b11111110;
                         else
-                            _kb.keyQ_T = _kb.keyQ_T | 0b00000001;
+                            keyQ_T = keyQ_T | 0b00000001;
                         break;
                     }
                 case 82: // R
                     {
                         if (down)
-                            _kb.keyQ_T = _kb.keyQ_T & 0b11110111;
+                            keyQ_T = keyQ_T & 0b11110111;
                         else
-                            _kb.keyQ_T = _kb.keyQ_T |0b00001000;
+                            keyQ_T = keyQ_T |0b00001000;
                         break;
                     }
                 case 83: // S
                     {
                         if (down)
-                            _kb.keyA_G = _kb.keyA_G & 0b11111101;
+                            keyA_G = keyA_G & 0b11111101;
                         else
-                            _kb.keyA_G = _kb.keyA_G | 0b00000010;
+                            keyA_G = keyA_G | 0b00000010;
                         break;
                     }
                 case 84: // T
                     {
                         if (down)
-                            _kb.keyQ_T = _kb.keyQ_T & 0b11101111;
+                            keyQ_T = keyQ_T & 0b11101111;
                         else
-                            _kb.keyQ_T = _kb.keyQ_T | 0b00010000;
+                            keyQ_T = keyQ_T | 0b00010000;
                         break;
                     }
                 case 85: // U
                     {
                         if (down)
-                            _kb.keyY_P = _kb.keyY_P & 0b11110111;
+                            keyY_P = keyY_P & 0b11110111;
                         else
-                            _kb.keyY_P = _kb.keyY_P | 0b00001000;
+                            keyY_P = keyY_P | 0b00001000;
                         break;
                     }
                 case 86: // V
                     {
                         if (down)
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11101111;
+                            keyCAPS_V = keyCAPS_V & 0b11101111;
                         else
-                            _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00010000;
+                            keyCAPS_V = keyCAPS_V | 0b00010000;
                         break;
                     }
                 case 87: // W
                     {
                         if (down)
-                            _kb.keyQ_T = _kb.keyQ_T & 0b11111101;
+                            keyQ_T = keyQ_T & 0b11111101;
                         else
-                            _kb.keyQ_T = _kb.keyQ_T | 0b00000010;
+                            keyQ_T = keyQ_T | 0b00000010;
                         break;
                     }
                 case 88: // X
                     {
                         if (down)
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111011;
+                            keyCAPS_V = keyCAPS_V & 0b11111011;
                         else
-                            _kb.keyCAPS_V = _kb.keyCAPS_V |0b00000100;
+                            keyCAPS_V = keyCAPS_V |0b00000100;
                         break;
                     }
                 case 89: // Y
                     {
                         if (down)
-                            _kb.keyY_P = _kb.keyY_P & 0b11101111;
+                            keyY_P = keyY_P & 0b11101111;
                         else
-                            _kb.keyY_P = _kb.keyY_P | 0b00010000;
+                            keyY_P = keyY_P | 0b00010000;
                         break;
                     }
                 case 90: // Z
                     {
                         if (down)
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111101;
+                            keyCAPS_V = keyCAPS_V & 0b11111101;
                         else
-                            _kb.keyCAPS_V = _kb.keyCAPS_V |0b00000010;
+                            keyCAPS_V = keyCAPS_V |0b00000010;
                         break;
                     }
                 case 48: // 0
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11111110;
+                            key6_0 = key6_0 & 0b11111110;
                         else
-                            _kb.key6_0 = _kb.key6_0 | 0b00000001;
+                            key6_0 = key6_0 | 0b00000001;
                         break;
                     }
                 case 49: // 1
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11111110;
+                            key1_5 = key1_5 & 0b11111110;
                         else
-                            _kb.key1_5 = _kb.key1_5 | 0b00000001;
+                            key1_5 = key1_5 | 0b00000001;
                         break;
                     }
                 case 50: // 2
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11111101;
+                            key1_5 = key1_5 & 0b11111101;
                         else
-                            _kb.key1_5 = _kb.key1_5 |0b00000010;
+                            key1_5 = key1_5 |0b00000010;
                         break;
                     }
                 case 51: // 3
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11111011;
+                            key1_5 = key1_5 & 0b11111011;
                         else
-                            _kb.key1_5 = _kb.key1_5 |0b00000100;
+                            key1_5 = key1_5 |0b00000100;
                         break;
                     }
                 case 52: // 4
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11110111;
+                            key1_5 = key1_5 & 0b11110111;
                         else
-                            _kb.key1_5 = _kb.key1_5 |0b00001000;
+                            key1_5 = key1_5 |0b00001000;
                         break;
                     }
                 case 53: // 5
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11101111;
+                            key1_5 = key1_5 & 0b11101111;
                         else
-                            _kb.key1_5 = _kb.key1_5 | 0b00010000;
+                            key1_5 = key1_5 | 0b00010000;
                         break;
                     }
                 case 54: // 6
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11101111;
+                            key6_0 = key6_0 & 0b11101111;
                         else
-                            _kb.key6_0 = _kb.key6_0 | 0b00010000;
+                            key6_0 = key6_0 | 0b00010000;
                         break;
                     }
                 case 55: // 7
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11110111;
+                            key6_0 = key6_0 & 0b11110111;
                         else
-                            _kb.key6_0 = _kb.key6_0 |0b00001000;
+                            key6_0 = key6_0 |0b00001000;
                         break;
                     }
                 case 56: // 8
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11111011;
+                            key6_0 = key6_0 & 0b11111011;
                         else
-                            _kb.key6_0 = _kb.key6_0 |0b00000100;
+                            key6_0 = key6_0 |0b00000100;
                         break;
                     }
                 case 57: // 9
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11111101;
+                            key6_0 = key6_0 & 0b11111101;
                         else
-                            _kb.key6_0 = _kb.key6_0 |0b00000010;
+                            key6_0 = key6_0 |0b00000010;
                         break;
                     }
-                case 96: // _kb.keypad 0
+                case 96: // keypad 0
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11111110;
+                            key6_0 = key6_0 & 0b11111110;
                         else
-                            _kb.key6_0 = _kb.key6_0 | 0b00000001;
+                            key6_0 = key6_0 | 0b00000001;
                         break;
                     }
-                case 97: // _kb.keypad 1
+                case 97: // keypad 1
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11111110;
+                            key1_5 = key1_5 & 0b11111110;
                         else
-                            _kb.key1_5 = _kb.key1_5 | 0b00000001;
+                            key1_5 = key1_5 | 0b00000001;
                         break;
                     }
-                case 98: // _kb.keypad 2
+                case 98: // keypad 2
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11111101;
+                            key1_5 = key1_5 & 0b11111101;
                         else
-                            _kb.key1_5 = _kb.key1_5 |0b00000010;
+                            key1_5 = key1_5 |0b00000010;
                         break;
                     }
-                case 99: // _kb.keypad 3
+                case 99: // keypad 3
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11111011;
+                            key1_5 = key1_5 & 0b11111011;
                         else
-                            _kb.key1_5 = _kb.key1_5 |0b00000100;
+                            key1_5 = key1_5 |0b00000100;
                         break;
                     }
-                case 100: // _kb.keypad 4
+                case 100: // keypad 4
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11110111;
+                            key1_5 = key1_5 & 0b11110111;
                         else
-                            _kb.key1_5 = _kb.key1_5 |0b00001000;
+                            key1_5 = key1_5 |0b00001000;
                         break;
                     }
-                case 101: // _kb.keypad 5
+                case 101: // keypad 5
                     {
                         if (down)
-                            _kb.key1_5 = _kb.key1_5 & 0b11101111;
+                            key1_5 = key1_5 & 0b11101111;
                         else
-                            _kb.key1_5 = _kb.key1_5 | 0b00010000;
+                            key1_5 = key1_5 | 0b00010000;
                         break;
                     }
-                case 102: // _kb.keypad 6
+                case 102: // keypad 6
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11101111;
+                            key6_0 = key6_0 & 0b11101111;
                         else
-                            _kb.key6_0 = _kb.key6_0 | 0b00010000;
+                            key6_0 = key6_0 | 0b00010000;
                         break;
                     }
-                case 103: // _kb.keypad 7
+                case 103: // keypad 7
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11110111;
+                            key6_0 = key6_0 & 0b11110111;
                         else
-                            _kb.key6_0 = _kb.key6_0 |0b00001000;
+                            key6_0 = key6_0 |0b00001000;
                         break;
                     }
-                case 104: // _kb.keypad 8
+                case 104: // keypad 8
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11111011;
+                            key6_0 = key6_0 & 0b11111011;
                         else
-                            _kb.key6_0 = _kb.key6_0 |0b00000100;
+                            key6_0 = key6_0 |0b00000100;
                         break;
                     }
-                case 105: // _kb.keypad 9
+                case 105: // keypad 9
                     {
                         if (down)
-                            _kb.key6_0 = _kb.key6_0 & 0b11111101;
+                            key6_0 = key6_0 & 0b11111101;
                         else
-                            _kb.key6_0 = _kb.key6_0 |0b00000010;
+                            key6_0 = key6_0 |0b00000010;
                         break;
                     }
-                case 106: // _kb.keypad *
+                case 106: // keypad *
                     {
                         if (down)
                         {
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11101111;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            keyB_SPC = keyB_SPC & 0b11101111;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.keyB_SPC = _kb.keyB_SPC | 0b00010000;
-                            if (!CAPS)
+                            keyB_SPC = keyB_SPC | 0b00010000;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
                         break;
                     }
-                case 107: // _kb.keypad +
+                case 107: // keypad +
                     {
                         if (down)
                         {
-                            _kb.keyH_ENT = _kb.keyH_ENT & 0b11111011;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            keyH_ENT = keyH_ENT & 0b11111011;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.keyH_ENT = _kb.keyH_ENT |0b00000100;
-                            if (!CAPS)
+                            keyH_ENT = keyH_ENT |0b00000100;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
                         break;
                     }
-                case 109: // _kb.keypad -
+                case 109: // keypad -
                     {
                         if (down)
                         {
-                            _kb.keyH_ENT = _kb.keyH_ENT & 0b11110111;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            keyH_ENT = keyH_ENT & 0b11110111;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.keyH_ENT = _kb.keyH_ENT |0b00001000;
-                            if (!CAPS)
+                            keyH_ENT = keyH_ENT |0b00001000;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
                         break;
                     }
-                case 110: // _kb.keypad .
+                case 110: // keypad .
                     {
                         if (down)
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11111101;
+                            keyB_SPC = keyB_SPC & 0b11111101;
                         else
-                            _kb.keyB_SPC = _kb.keyB_SPC |0b00000010;
+                            keyB_SPC = keyB_SPC |0b00000010;
                         break;
                     }
-                case 111: // _kb.keypad /
+                case 111: // keypad /
                     {
                         if (down)
                         {
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11101110;
+                            keyCAPS_V = keyCAPS_V & 0b11101110;
                         }
-                        else if (!CAPS)
+                        else if (!ShiftPressed)
                         {
-                            _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00010001;
+                            keyCAPS_V = keyCAPS_V | 0b00010001;
                         }
                         else
                         {
-                            _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00010000;
+                            keyCAPS_V = keyCAPS_V | 0b00010000;
                         }
 
                         break;
@@ -632,15 +648,15 @@ namespace Csharp81
                     {
                         if (down)
                         {
-                            _kb.key1_5 = _kb.key1_5 & 0b11101111;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            key1_5 = key1_5 & 0b11101111;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.key1_5 = _kb.key1_5 | 0b00010000;
-                            if (!CAPS)
+                            key1_5 = key1_5 | 0b00010000;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
@@ -650,15 +666,15 @@ namespace Csharp81
                     {
                         if (down)
                         {
-                            _kb.key6_0 = _kb.key6_0 & 0b11110111;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            key6_0 = key6_0 & 0b11110111;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.key6_0 = _kb.key6_0 | 0b00001000;
-                            if (!CAPS)
+                            key6_0 = key6_0 | 0b00001000;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
@@ -668,15 +684,15 @@ namespace Csharp81
                     {
                         if (down)
                         {
-                            _kb.key6_0 = _kb.key6_0 & 0b11111011;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            key6_0 = key6_0 & 0b11111011;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.key6_0 = _kb.key6_0 | 0b00000100;
-                            if (!CAPS)
+                            key6_0 = key6_0 | 0b00000100;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
@@ -686,15 +702,15 @@ namespace Csharp81
                     {
                         if (down)
                         {
-                            _kb.key6_0 = _kb.key6_0 & 0b11101111;
-                            _kb.keyCAPS_V = _kb.keyCAPS_V & 0b11111110;
+                            key6_0 = key6_0 & 0b11101111;
+                            keyCAPS_V = keyCAPS_V & 0b11111110;
                         }
                         else
                         {
-                            _kb.key6_0 = _kb.key6_0 | 0b00010000;
-                            if (!CAPS)
+                            key6_0 = key6_0 | 0b00010000;
+                            if (!ShiftPressed)
                             {
-                                _kb.keyCAPS_V = _kb.keyCAPS_V | 0b00000001;
+                                keyCAPS_V = keyCAPS_V | 0b00000001;
                             }
                         }
 
@@ -703,25 +719,25 @@ namespace Csharp81
                 case 13: // RETURN
                     {
                         if (!down)
-                 //           _kb.keyH_ENT = _kb.keyH_ENT & 0b11111110;
+                 //           keyH_ENT = keyH_ENT & 0b11111110;
                  //       else
-                        _kb.keyH_ENT = _kb.keyH_ENT | 0b00000001;
+                        keyH_ENT = keyH_ENT | 0b00000001;
                         break;
                     }
                 case 32: // SPACE BAR
                     {
                         if (down)
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11111110;
+                            keyB_SPC = keyB_SPC & 0b11111110;
                         else
-                            _kb.keyB_SPC = _kb.keyB_SPC | 0b00000001;
+                            keyB_SPC = keyB_SPC | 0b00000001;
                         break;
                     }
                 case 190: // .
                     {
                         if (down)
-                            _kb.keyB_SPC = _kb.keyB_SPC & 0b11111101;
+                            keyB_SPC = keyB_SPC & 0b11111101;
                         else
-                            _kb.keyB_SPC = _kb.keyB_SPC | 0b00000010;
+                            keyB_SPC = keyB_SPC | 0b00000010;
                         break;
                     }
 
@@ -735,22 +751,19 @@ namespace Csharp81
             doKeyRet = true;
             return doKeyRet;
         }
-
         public void doEnterKey(bool ShiftPressed)
         {
             if (ShiftPressed)
                 {
-                    _kb.keyCAPS_V = (_kb.keyCAPS_V & 0b11111110);
+                    keyCAPS_V = (keyCAPS_V & 0b11111110);
                 }
                 else
                 {
-                    _kb.keyCAPS_V = (_kb.keyCAPS_V | 0b00000001);
+                    keyCAPS_V = (keyCAPS_V | 0b00000001);
                 }
-            _kb.keyH_ENT = _kb.keyH_ENT & 0b11111110;
+            keyH_ENT = keyH_ENT & 0b11111110;
 
         }
-
-       
         public  int inb(int port)
         {
             int inbRet = default;
@@ -762,21 +775,21 @@ namespace Csharp81
                 // port = glMemAddrDiv256(port And &HFF00&)
                 port = (int)((port & 0xFF00L) >> 8);
                 if ((port & 1) == 0)
-                    res = res & _kb.keyCAPS_V;
+                    res = res & keyCAPS_V;
                 if ((port & 2) == 0)
-                    res = res & _kb.keyA_G;
+                    res = res & keyA_G;
                 if ((port & 4) == 0)
-                    res = res & _kb.keyQ_T;
+                    res = res & keyQ_T;
                 if ((port & 8) == 0)
-                    res = res & _kb.key1_5;
+                    res = res & key1_5;
                 if ((port & 16) == 0)
-                    res = res & _kb.key6_0;
+                    res = res & key6_0;
                 if ((port & 32) == 0)
-                    res = res & _kb.keyY_P;
+                    res = res & keyY_P;
                 if ((port & 64) == 0)
-                    res = res & _kb.keyH_ENT;
+                    res = res & keyH_ENT;
                 if ((port & 128) == 0)
-                    res = res & _kb.keyB_SPC;
+                    res = res & keyB_SPC;
                 // // Bit7 of the port FE is always 0 on the zx81 (or so it appears)
                 res = res & 127;
             }
@@ -802,17 +815,17 @@ namespace Csharp81
                 // // LOAD "filename"
                 FileNamePtr = FileNamePtr & 32767;
                 // // FileNamePtr points to the filename in the ZX81 character set
-                if (_mem.peekb(FileNamePtr) == 227)
+                if (_zx81Memory.Peekb(FileNamePtr) == 227)
                 {
                     Environment.Exit(0);
                 }
 
-                while (_mem.peekb(FileNamePtr) < 127)
+                while (_zx81Memory.Peekb(FileNamePtr) < 127)
                 {
-                    sFileName = sFileName + ZXCharToASCII((byte)(_mem.peekb(FileNamePtr)));
+                    sFileName = sFileName + ZXCharToASCII((byte)(_zx81Memory.Peekb(FileNamePtr)));
                     FileNamePtr = FileNamePtr + 1;
                 }
-                sFileName = Strings.Trim(sFileName + ZXCharToASCII((byte)(_mem.peekb(FileNamePtr)))) + ".P";
+                sFileName = Strings.Trim(sFileName + ZXCharToASCII((byte)(_zx81Memory.Peekb(FileNamePtr)))) + ".P";
             }
 
             if (string.IsNullOrEmpty(FileSystem.Dir(Properties.Settings.Default.stgTapeDir + "/" + sFileName)))
@@ -822,7 +835,7 @@ namespace Csharp81
 
             var loopTo = loadFile.Length - 1;
             for (i = 0; i <= loopTo; i++)
-                _mem.pokeb(0x4009 + i, loadFile[i]);
+                _zx81Memory.Pokeb(0x4009 + i, loadFile[i]);
 
             bInputWait = true;
             ShowDisplay(true);
@@ -834,7 +847,7 @@ namespace Csharp81
         {
             string sFileName = "";
             int i;
-            int saveFileSize = _mem.peekw(16404) - 0x4009;
+            int saveFileSize = _zx81Memory.Peekw(16404) - 0x4009;
 
       
             var saveFile = new byte[saveFileSize + 1];
@@ -849,19 +862,19 @@ namespace Csharp81
                 // // SAVE "filename"
                 FileNamePtr = FileNamePtr & 32767;
                 // // FileNamePtr points to the filename in the ZX81 character set
-                while (_mem.peekb(FileNamePtr) < 127)
+                while (_zx81Memory.Peekb(FileNamePtr) < 127)
                 {
-                    sFileName = sFileName + ZXCharToASCII((byte)(_mem.peekb(FileNamePtr)));
+                    sFileName = sFileName + ZXCharToASCII((byte)(_zx81Memory.Peekb(FileNamePtr)));
                     FileNamePtr = FileNamePtr + 1;
                 }
-                sFileName = Strings.Trim(sFileName + ZXCharToASCII((byte)(_mem.peekb(FileNamePtr)))) + ".P";
+                sFileName = Strings.Trim(sFileName + ZXCharToASCII((byte)(_zx81Memory.Peekb(FileNamePtr)))) + ".P";
             }
 
 
 
-            var loopTo = _mem.peekw(16404);
+            var loopTo = _zx81Memory.Peekw(16404);
             for (i = 0x4009; i <= loopTo; i++)
-                saveFile[i - 0x4009] = (byte)(_mem.peekb(i));
+                saveFile[i - 0x4009] = (byte)(_zx81Memory.Peekb(i));
 
             Information.Err().Clear();
 
@@ -877,8 +890,7 @@ namespace Csharp81
             bInputWait = true;
             ShowDisplay(true);
         }
-
-            private string ZXCharToASCII(byte cZX)
+        private string ZXCharToASCII(byte cZX)
             {
                 string ZXCharToASCIIRet = "";
                 if ((cZX & 128) == 128)
@@ -964,15 +976,15 @@ namespace Csharp81
             {
                 if (bShowDisplay)
                 {
-                    _form.BackColor = borderColour;
+                    _mainForm.BackColor = borderColour;
                 }
                 // If bPaintDisplay Then screenPaint()
                 else
                 {
-                    _form.BackColor = fastmodeColour;
+                    _mainForm.BackColor = fastmodeColour;
                 }
-                _disp.Visible = bShowDisplay;
-                _form.Refresh();
+                _display.Visible = bShowDisplay;
+                _mainForm.Refresh();
                 bDisplayIsShowing = bShowDisplay;
             }
 
@@ -996,15 +1008,13 @@ namespace Csharp81
             lLeftMost = 31;
             lRightMost = 0;
 
-            _disp.Visible = false;
-
             for (y = 0; y <= 191; y++)
             {
                 for (x = 0; x <= 31; x++)
                 {
-                    c = _mem.peekb(lHiresLoc + x + y * 33) & (int)(0xBFL); // strip bit 6
+                    c = _zx81Memory.Peekb(lHiresLoc + x + y * 33) & (int)(0xBFL); // strip bit 6
 
-                    if (c != cLastHiResScreen[y, x])
+                    if (c != LastHiResScreen[y, x])
                     {
                         if (y < lTopMost)
                             lTopMost = y;
@@ -1018,14 +1028,14 @@ namespace Csharp81
                         if ((c & 128) != 0)
                         {
                             // // Inverse video
-                            gcBufferBits[y * 32 + x] = (byte)(_mem.peekb(_intI * 256 + (c & 63) * 8) ^ 255);
+                            gcBufferBits[y * 32 + x] = (byte)(_zx81Memory.Peekb(_intI * 256 + (c & 63) * 8) ^ 255);
                         }
                         else
                         {
                             // // Normal video
-                            gcBufferBits[y * 32 + x] = (byte)(_mem.peekb(_intI * 256 + c * 8));
+                            gcBufferBits[y * 32 + x] = (byte)(_zx81Memory.Peekb(_intI * 256 + c * 8));
                         }
-                        cLastHiResScreen[y, x] = c;
+                        LastHiResScreen[y, x] = c;
                     }
                 }
             }
@@ -1034,7 +1044,6 @@ namespace Csharp81
             if (bUpdated)
                 SetBitMapFromByteArray(displayBitmap, gcBufferBits); // StretchDIBits frmMainWnd.picDisplay.hdc, lLeftMost * glDisplayXMultiplier, (lBottomMost + 1) * glDisplayYMultiplier - 1, (lRightMost - lLeftMost + 8) * glDisplayXMultiplier, -(lBottomMost - lTopMost + 1) * glDisplayYMultiplier, lLeftMost, lTopMost, (lRightMost - lLeftMost) + 8, lBottomMost - lTopMost + 1, gcBufferBits(0), bmiBuffer, DIB_RGB_COLORS, SRCCOPY
 
-            _disp.Visible = true;
         }
 
         public void screenPaint(int _intI)
@@ -1057,7 +1066,7 @@ namespace Csharp81
             lLeftMost = 31;
             lRightMost = 0;
 
-            ptr = _mem.peekw(16396) + 1; // mem[16396] + 256 * mem[16397] + 1; // // D_FILE (+1 to skip the initial HALT)
+            ptr = _zx81Memory.Peekw(16396) + 1; // mem[16396] + 256 * mem[16397] + 1; // // D_FILE (+1 to skip the initial HALT)
 
             // // don't bother if D_FILE is uninitialised
             if (ptr == 0)
@@ -1071,7 +1080,7 @@ namespace Csharp81
             {
                 for (x = 0; x <= 31; x++)
                 {
-                    if (_mem.peekb(ptr) == 0x76L)
+                    if (_zx81Memory.Peekb(ptr) == 0x76L)
                     {
                         lChar = y * 32 + x;
                         c = 0; // // space
@@ -1080,10 +1089,10 @@ namespace Csharp81
                     else
                     {
                         lChar = y * 32 + x;
-                        c = (int)(_mem.peekb(ptr) & 0xBFL);
+                        c = (int)(_zx81Memory.Peekb(ptr) & 0xBFL);
                     } // strip bit 6
 
-                    if (c != sLastScreen[lChar])
+                    if (c != LastScreen[lChar])
                     {
                         // // If this character has changed since we last painted
                         // // the screen, repaint it
@@ -1099,14 +1108,14 @@ namespace Csharp81
                         if ((c & 128)==128)
                         {
                             for (lRow = 0; lRow <= 7; lRow++)
-                                gcBufferBits[y * 256 + x + lRow * 32] = (byte)(_mem.peekb(_intI * 256 + (c & 63) * 8 + lRow) ^ 255);
+                                gcBufferBits[y * 256 + x + lRow * 32] = (byte)(_zx81Memory.Peekb(_intI * 256 + (c & 63) * 8 + lRow) ^ 255);
                         }
                         else
                         {
                             for (lRow = 0; lRow <= 7; lRow++)
-                                gcBufferBits[y * 256 + x + lRow * 32] = (byte)(_mem.peekb(_intI * 256 + c * 8 + lRow));
+                                gcBufferBits[y * 256 + x + lRow * 32] = (byte)(_zx81Memory.Peekb(_intI * 256 + c * 8 + lRow));
                         }
-                        sLastScreen[lChar] = c;
+                        LastScreen[lChar] = c;
                     }
 
                     ptr = ptr + 1;
@@ -1123,7 +1132,6 @@ namespace Csharp81
 
             // frmMainWnd.picDisplay.Visible = True
         }
-
         public void ReInitHiresScreen()
         {
             int y;
@@ -1133,7 +1141,7 @@ namespace Csharp81
             {
                 for (x = 0; x <= 31; x++)
                 {
-                    cLastHiResScreen[y, x] = 0;
+                    LastHiResScreen[y, x] = 0;
                     gcBufferBits[y * 32 + x] = 0;
                 }
             }
@@ -1148,13 +1156,13 @@ namespace Csharp81
 
             for (lCounter = 32767 - 6336; lCounter >= 8192; lCounter -= 1)
             {
-                v = _mem.peekb(lCounter + 32);
+                v = _zx81Memory.Peekb(lCounter + 32);
                 if ((v & 64) != 0)
                 {
                     FoundHiRes = true;
                     for (lCounter2 = 0; lCounter2 <= 191; lCounter2++)
                     {
-                        if ((_mem.peekb(lCounter + 33 * lCounter2) & 64 | _mem.peekb(lCounter + 32 + 33 * lCounter2)) != v)
+                        if ((_zx81Memory.Peekb(lCounter + 33 * lCounter2) & 64 | _zx81Memory.Peekb(lCounter + 32 + 33 * lCounter2)) != v)
                         {
                             FoundHiRes = false;
                             break;
@@ -1170,61 +1178,60 @@ namespace Csharp81
 
             return SearchHiresScreenRet;
         }
-
         public void InstallROMHacks()
         {
             // // Patch the 'SAVE' ROM routine with an illegal operation, which we
             // // trap in the Z80 emulation so the file can be saved to disk instead of
             // // the ROM trying to output it to TAPE via the ULA
-            _mem.pokebUnrestricted(0x2FC,0xED); // // ED FD    ; the illegal Z80 op we use for SAVE
-            _mem.pokebUnrestricted(0x2FD,0xFD); // //
-            _mem.pokebUnrestricted(0x2FE,0xC3); // // JP 0207h ); this is where the ZX81 ROM jumps to after
-            _mem.pokebUnrestricted(0x2FF,0x7);  // //          ); saving a program to tape
-            _mem.pokebUnrestricted(0x300,0x2);  // //
+            _zx81Memory.PokebUnrestricted(0x2FC,0xED); // // ED FD    ; the illegal Z80 op we use for SAVE
+            _zx81Memory.PokebUnrestricted(0x2FD,0xFD); // //
+            _zx81Memory.PokebUnrestricted(0x2FE,0xC3); // // JP 0207h ); this is where the ZX81 ROM jumps to after
+            _zx81Memory.PokebUnrestricted(0x2FF,0x7);  // //          ); saving a program to tape
+            _zx81Memory.PokebUnrestricted(0x300,0x2);  // //
 
             // // Patch the 'LOAD' ROM routine with an illegal op, which is trapped
             // // just like the SAVE patch above.
-            _mem.pokebUnrestricted(0x347,0xEB); // // EX DE,HL ); points HL to the name of the program to
+            _zx81Memory.PokebUnrestricted(0x347,0xEB); // // EX DE,HL ); points HL to the name of the program to
                                // //          ); load (in the ZX character set)
-            _mem.pokebUnrestricted(0x348,0xED); // // ED FC    ); the illegal Z80 op we use for LOAD
-            _mem.pokebUnrestricted(0x349,0xFC); // //
-            _mem.pokebUnrestricted(0x34A,0xC3); // // JP 0207h ); this is where the ZX81 ROM jumps to after
-            _mem.pokebUnrestricted(0x34B,0x7);  // //          ); loading a program from tape
-            _mem.pokebUnrestricted(0x34C,0x2);  // //
+            _zx81Memory.PokebUnrestricted(0x348,0xED); // // ED FC    ); the illegal Z80 op we use for LOAD
+            _zx81Memory.PokebUnrestricted(0x349,0xFC); // //
+            _zx81Memory.PokebUnrestricted(0x34A,0xC3); // // JP 0207h ); this is where the ZX81 ROM jumps to after
+            _zx81Memory.PokebUnrestricted(0x34B,0x7);  // //          ); loading a program from tape
+            _zx81Memory.PokebUnrestricted(0x34C,0x2);  // //
 
             // // Execute 'out (0),a' when waiting for input, and
             // // 'out (1),a when finished waiting (used to paint
             // // the screen during idle periods when in fast mode)
-            _mem.pokebUnrestricted(0x4CA,0xD3); // //       OUT (0),A  ); Tell the emulator we are waiting
-            _mem.pokebUnrestricted(0x4CB,0);    // //                  ); for keyboard input
-            _mem.pokebUnrestricted(0x4CC,0xCB); // // loop: BIT 0,(HL) ); Loop until our NMI emulation sets
-            _mem.pokebUnrestricted(0x4CD,0x46); // //                  ); bit 0 of (CDFLAGS), which indicates
-            _mem.pokebUnrestricted(0x4CE,0x28); // //       JR Z,loop  ); that a key has been pressed
-            _mem.pokebUnrestricted(0x4CF,0xFC); // //
-            _mem.pokebUnrestricted(0x4D0,0xD3); // //       OUT (1),A  ); Tell the emulator that we are no
-            _mem.pokebUnrestricted(0x4D1,1);    // //                  ); longer waiting for keyboard input
-            _mem.pokebUnrestricted(0x4D2,0);    // //       NOP        ); NOP an old byte (filler)
+            _zx81Memory.PokebUnrestricted(0x4CA,0xD3); // //       OUT (0),A  ); Tell the emulator we are waiting
+            _zx81Memory.PokebUnrestricted(0x4CB,0);    // //                  ); for keyboard input
+            _zx81Memory.PokebUnrestricted(0x4CC,0xCB); // // loop: BIT 0,(HL) ); Loop until our NMI emulation sets
+            _zx81Memory.PokebUnrestricted(0x4CD,0x46); // //                  ); bit 0 of (CDFLAGS), which indicates
+            _zx81Memory.PokebUnrestricted(0x4CE,0x28); // //       JR Z,loop  ); that a key has been pressed
+            _zx81Memory.PokebUnrestricted(0x4CF,0xFC); // //
+            _zx81Memory.PokebUnrestricted(0x4D0,0xD3); // //       OUT (1),A  ); Tell the emulator that we are no
+            _zx81Memory.PokebUnrestricted(0x4D1,1);    // //                  ); longer waiting for keyboard input
+            _zx81Memory.PokebUnrestricted(0x4D2,0);    // //       NOP        ); NOP an old byte (filler)
 
             // // This is required for correct implementation of the PAUSE command, as the
             // // PAUSE code in a real ZX81 is tied in with the FRAMES counter in the FAST
             // // mode display loop which we emulate outside of the routines in the ROM.
-            _mem.pokebUnrestricted(0x2A9,0xD3); // //   OUT (0),A  ); see above
-            _mem.pokebUnrestricted(0x2AA,0);
-            _mem.pokebUnrestricted(0x2AB,118);  // //   HALT       ); ensures the bit of display code that
+            _zx81Memory.PokebUnrestricted(0x2A9,0xD3); // //   OUT (0),A  ); see above
+            _zx81Memory.PokebUnrestricted(0x2AA,0);
+            _zx81Memory.PokebUnrestricted(0x2AB,118);  // //   HALT       ); ensures the bit of display code that
                                // //              ); we loop through only gets executed
                                // //              ); once per interrupt (as it would in a
                                // //              ); real ZX81)
-            _mem.pokebUnrestricted(0x2AC,205);  // //   CALL 0229h ); jump out of the display routine
-            _mem.pokebUnrestricted(0x2AD,0x29); // //              ); early to avoid the nasty code that
-            _mem.pokebUnrestricted(0x2AE,2);    // //              ); jumps right into the DFILE!
-            _mem.pokebUnrestricted(0x2AF,0xD3); // //  OUT (1),A   ); see above
-            _mem.pokebUnrestricted(0x2B0,1);
-            _mem.pokebUnrestricted(0x2B1,201);  // //  RET         ); Return to PAUSE command routine
+            _zx81Memory.PokebUnrestricted(0x2AC,205);  // //   CALL 0229h ); jump out of the display routine
+            _zx81Memory.PokebUnrestricted(0x2AD,0x29); // //              ); early to avoid the nasty code that
+            _zx81Memory.PokebUnrestricted(0x2AE,2);    // //              ); jumps right into the DFILE!
+            _zx81Memory.PokebUnrestricted(0x2AF,0xD3); // //  OUT (1),A   ); see above
+            _zx81Memory.PokebUnrestricted(0x2B0,1);
+            _zx81Memory.PokebUnrestricted(0x2B1,201);  // //  RET         ); Return to PAUSE command routine
         }
         public void LoadROM()
         {
             byte[] sROM;
-            int iCounter;
+       
 
             if (FileSystem.Dir("zx81.rom")=="")
             {
@@ -1236,15 +1243,30 @@ namespace Csharp81
 
 
             int loopTo = sROM.Length - 1;
-            for (iCounter = 0; iCounter <= loopTo; iCounter++)
-                _mem.pokebUnrestricted(iCounter,sROM[iCounter]);
+            for (int iCounter = 0; iCounter <= loopTo; iCounter++)
+                _zx81Memory.PokebUnrestricted(iCounter,sROM[iCounter]);
         }
+        public void LoadMemoCalcROM()
+        {
+            byte[] sROM;
 
+
+            if (string.IsNullOrEmpty(FileSystem.Dir("memocalc.rom")))
+            {
+                Interaction.MsgBox("Error: Could not find required MemoCalc ROM image '" + FileSystem.CurDir() + @"\" + "memocalc.rom'.", Constants.vbOKOnly | Constants.vbCritical, "vb81");
+                return;
+            }
+
+            sROM = File.ReadAllBytes("memocalc.rom");
+
+            for (int iCounter = 12288; iCounter <= 16383; iCounter++)
+                _zx81Memory.PokebUnrestricted(iCounter, sROM[iCounter-12288]);
+        }
         public void HandleInterrupt(int _intI)
         {
             int lSleep;
 
-            if ((_mem.peekb(16443) & 128) == 128)
+            if ((_zx81Memory.Peekb(16443) & 128) == 128)
             {
                 // // SLOW mode
                 if (lHiresLoc == 0)
@@ -1285,7 +1307,7 @@ namespace Csharp81
 
             Application.DoEvents();
 
-            update_kybd();
+            Update_kybd();
             // // Interrupts should occur every 1/50th of a second (20ms)...
             // // In the (rather unlikely!) event that the emulation is
             // // running too quick, slow things down a bit
@@ -1295,7 +1317,7 @@ namespace Csharp81
             // // emulation runs muxh faster than an actual ZX81!
 
 
-            TimeSpan interval = DateTime.Now - StartTime;
+            TimeSpan interval = DateTime.Now - _startTime;
 
             int t = (int)(interval.TotalMilliseconds);
 
@@ -1306,10 +1328,9 @@ namespace Csharp81
                 lSleep = TimeDelay - t; // glInterruptTimer - timer.Elapsed.Milliseconds 'timeGetTime()
                 System.Threading.Thread.Sleep(lSleep);
             }
-          StartTime = DateTime.Now;
+          _startTime = DateTime.Now;
         }
-
-        public void update_kybd()
+        public void Update_kybd()
         {
             int f;
             int oldLastK1;
@@ -1318,10 +1339,10 @@ namespace Csharp81
             var LastK2 = default(int);
 
 
-            oldLastK1 = _mem.peekb(16421);
-            oldLastK2 = _mem.peekb(16422);
+            oldLastK1 = _zx81Memory.Peekb(16421);
+            oldLastK2 = _zx81Memory.Peekb(16422);
 
-            if ((_mem.peekb(16443) & 128) == 0)
+            if ((_zx81Memory.Peekb(16443) & 128) == 0)
             {
                 // // FAST mode is 3.25MHz
                 glTstatesPerInterrupt = 65000;
@@ -1332,13 +1353,13 @@ namespace Csharp81
                 glTstatesPerInterrupt = 16000;
 
                 // // Decrement FRAMES when in SLOW mode
-                f = ((_mem.peekb(16436) | (_mem.peekb(16437)) * 256)) & 32767;
+                f = ((_zx81Memory.Peekb(16436) | (_zx81Memory.Peekb(16437)) * 256)) & 32767;
                 if (f > 0)
                     f = f - 1;
                 else
                     f = 32767;
-                _mem.pokew(16436, 
-                    ((_mem.peekb(16436) | (_mem.peekb(16437) * 256)) & 32768) | f
+                _zx81Memory.Pokew(16436, 
+                    ((_zx81Memory.Peekb(16436) | (_zx81Memory.Peekb(16437) * 256)) & 32768) | f
                     );
             }
 
@@ -1348,192 +1369,192 @@ namespace Csharp81
 
             if (oldLastK1 == 0 & oldLastK2 == 0)
             {
-                _mem.pokeb(16421,255);
-                _mem.pokeb(16422,255);
+                _zx81Memory.Pokeb(16421,255);
+                _zx81Memory.Pokeb(16422,255);
                 return;
             }
 
             // A
-            if ((_kb.keyA_G & 0x1) == 0)
+            if ((keyA_G & 0x1) == 0)
             {
                 LastK1 = 253;
                 LastK2 = 253;
             }
 
             // S
-            if ((_kb.keyA_G & 0x2) == 0)
+            if ((keyA_G & 0x2) == 0)
             {
                 LastK1 = 253;
                 LastK2 = 251;
             }
 
             // D
-            if ((_kb.keyA_G & 0x4) == 0)
+            if ((keyA_G & 0x4) == 0)
             {
                 LastK1 = 253;
                 LastK2 = 247;
             }
 
             // F
-            if ((_kb.keyA_G & 0x8) == 0)
+            if ((keyA_G & 0x8) == 0)
             {
                 LastK1 = 253;
                 LastK2 = 239;
             }
 
             // G
-            if ((_kb.keyA_G & 0x10) == 0)
+            if ((keyA_G & 0x10) == 0)
             {
                 LastK1 = 253;
                 LastK2 = 223;
             }
 
             // H
-            if ((_kb.keyH_ENT & 0x10) == 0)
+            if ((keyH_ENT & 0x10) == 0)
             {
                 LastK1 = 191;
                 LastK2 = 223;
             }
 
             // J
-            if ((_kb.keyH_ENT & 0x8) == 0)
+            if ((keyH_ENT & 0x8) == 0)
             {
                 LastK1 = 191;
                 LastK2 = 239;
             }
 
             // K
-            if ((_kb.keyH_ENT & 0x4) == 0)
+            if ((keyH_ENT & 0x4) == 0)
             {
                 LastK1 = 191;
                 LastK2 = 247;
             }
 
             // L
-            if ((_kb.keyH_ENT & 0x2) == 0)
+            if ((keyH_ENT & 0x2) == 0)
             {
                 LastK1 = 191;
                 LastK2 = 251;
             }
 
             // ENTER
-            if ((_kb.keyH_ENT & 0x1) == 0)
+            if ((keyH_ENT & 0x1) == 0)
             {
                 LastK1 = 191;
                 LastK2 = 253;
             }
 
             // 1
-            if ((_kb.key1_5 & 0x1) == 0)
+            if ((key1_5 & 0x1) == 0)
             {
                 LastK1 = 247;
                 LastK2 = 253;
             }
             // 2
-            if ((_kb.key1_5 & 0x2) == 0)
+            if ((key1_5 & 0x2) == 0)
             {
                 LastK1 = 247;
                 LastK2 = 251;
             }
             // 3
-            if ((_kb.key1_5 & 0x4) == 0)
+            if ((key1_5 & 0x4) == 0)
             {
                 LastK1 = 247;
                 LastK2 = 247;
             }
             // 4
-            if ((_kb.key1_5 & 0x8) == 0)
+            if ((key1_5 & 0x8) == 0)
             {
                 LastK1 = 247;
                 LastK2 = 239;
             }
             // 5
-            if ((_kb.key1_5 & 0x10) == 0)
+            if ((key1_5 & 0x10) == 0)
             {
                 LastK1 = 247;
                 LastK2 = 223;
             }
             // 6
-            if ((_kb.key6_0 & 0x10) == 0)
+            if ((key6_0 & 0x10) == 0)
             {
                 LastK1 = 239;
                 LastK2 = 223;
             }
             // 7
-            if ((_kb.key6_0 & 0x8) == 0)
+            if ((key6_0 & 0x8) == 0)
             {
                 LastK1 = 239;
                 LastK2 = 239;
             }
             // 8
-            if ((_kb.key6_0 & 0x4) == 0)
+            if ((key6_0 & 0x4) == 0)
             {
                 LastK1 = 239;
                 LastK2 = 247;
             }
             // 9
-            if ((_kb.key6_0 & 0x2) == 0)
+            if ((key6_0 & 0x2) == 0)
             {
                 LastK1 = 239;
                 LastK2 = 251;
             }
             // 0
-            if ((_kb.key6_0 & 0x1) == 0)
+            if ((key6_0 & 0x1) == 0)
             {
                 LastK1 = 239;
                 LastK2 = 253;
             }
 
             // Q
-            if ((_kb.keyQ_T & 0x1) == 0)
+            if ((keyQ_T & 0x1) == 0)
             {
                 LastK1 = 251;
                 LastK2 = 253;
             }
             // W
-            if ((_kb.keyQ_T & 0x2) == 0)
+            if ((keyQ_T & 0x2) == 0)
             {
                 LastK1 = 251;
                 LastK2 = 251;
             }
             // E
-            if ((_kb.keyQ_T & 0x4) == 0)
+            if ((keyQ_T & 0x4) == 0)
             {
                 LastK1 = 251;
                 LastK2 = 247;
             }
             // R
-            if ((_kb.keyQ_T & 0x8) == 0)
+            if ((keyQ_T & 0x8) == 0)
             {
                 LastK1 = 251;
                 LastK2 = 239;
             }
             // T
-            if ((_kb.keyQ_T & 0x10) == 0)
+            if ((keyQ_T & 0x10) == 0)
             {
                 LastK1 = 251;
                 LastK2 = 223;
             }
             // Y
-            if ((_kb.keyY_P & 0x10) == 0)
+            if ((keyY_P & 0x10) == 0)
             {
                 LastK1 = 223;
                 LastK2 = 223;
             }
             // U
-            if ((_kb.keyY_P & 0x8) == 0)
+            if ((keyY_P & 0x8) == 0)
             {
                 LastK1 = 223;
                 LastK2 = 239;
             }
             // I
-            if ((_kb.keyY_P & 0x4) == 0)
+            if ((keyY_P & 0x4) == 0)
             {
                 LastK1 = 223;
                 LastK2 = 247;
             }
             // O
-            if ((_kb.keyY_P & 0x2) == 0)
+            if ((keyY_P & 0x2) == 0)
             {
                 LastK1 = 223;
                 LastK2 = 251;
@@ -1545,120 +1566,115 @@ namespace Csharp81
             // LastK2 = 253
             // End If
 
-            if ((_kb.keyY_P & 0x1) == 0)
+            if ((keyY_P & 0x1) == 0)
             {
                 LastK1 = 223;
                 LastK2 = 253;
             }
 
             // Z
-            if ((_kb.keyCAPS_V & 0x2) == 0)
+            if ((keyCAPS_V & 0x2) == 0)
             {
                 LastK1 = 254;
                 LastK2 = 251;
             }
             // X
-            if ((_kb.keyCAPS_V & 0x4) == 0)
+            if ((keyCAPS_V & 0x4) == 0)
             {
                 LastK1 = 254;
                 LastK2 = 247;
             }
             // C
-            if ((_kb.keyCAPS_V & 0x8) == 0)
+            if ((keyCAPS_V & 0x8) == 0)
             {
                 LastK1 = 254;
                 LastK2 = 239;
             }
             // V
-            if ((_kb.keyCAPS_V & 0x10) == 0)
+            if ((keyCAPS_V & 0x10) == 0)
             {
                 LastK1 = 254;
                 LastK2 = 223;
             }
             // B
-            if ((_kb.keyB_SPC & 0x10) == 0)
+            if ((keyB_SPC & 0x10) == 0)
             {
                 LastK1 = 127;
                 LastK2 = 223;
             }
             // N
-            if ((_kb.keyB_SPC & 0x8) == 0)
+            if ((keyB_SPC & 0x8) == 0)
             {
                 LastK1 = 127;
                 LastK2 = 239;
             }
             // M
-            if ((_kb.keyB_SPC & 0x4) == 0)
+            if ((keyB_SPC & 0x4) == 0)
             {
                 LastK1 = 127;
                 LastK2 = 247;
             }
             // .
-            if ((_kb.keyB_SPC & 0x2) == 0)
+            if ((keyB_SPC & 0x2) == 0)
             {
                 LastK1 = 127;
                 LastK2 = 251;
             }
             // SPACE
-            if ((_kb.keyB_SPC & 0x1) == 0)
+            if ((keyB_SPC & 0x1) == 0)
             {
                 LastK1 = 127;
                 LastK2 = 253;
             }
 
             // SHIFT
-            if ((_kb.keyCAPS_V & 0x1) == 0)
+            if ((keyCAPS_V & 0x1) == 0)
             {
                 LastK2 = LastK2 & 254;
             }
 
             if (LastK1 == 0)
             {
-                _mem.pokeb(16421,255);
-                if ((_kb.keyCAPS_V & 0x1) == 0)
+                _zx81Memory.Pokeb(16421,255);
+                if ((keyCAPS_V & 0x1) == 0)
                 {
-                    _mem.pokeb(16422,254);
+                    _zx81Memory.Pokeb(16422,254);
                 }
                 else
                 {
-                    _mem.pokeb(16422,255);
+                    _zx81Memory.Pokeb(16422,255);
                 }
                 return;
             }
 
-            _mem.pokeb(16421,(byte)LastK1);
-            _mem.pokeb(16422,(byte)LastK2);
+            _zx81Memory.Pokeb(16421,(byte)LastK1);
+            _zx81Memory.Pokeb(16422,(byte)LastK2);
 
             if (bInputWait == false)
                 return;
 
             // // Set FRAMES
-            _mem.pokeb(16424,55);
+            _zx81Memory.Pokeb(16424,55);
 
-            int k1 = _mem.peekb(16421);
-            int k2 = _mem.peekb(16422);
+            int k1 = _zx81Memory.Peekb(16421);
+            int k2 = _zx81Memory.Peekb(16422);
 
-            if (_mem.peekb(0x4027) == 255)
+            if (_zx81Memory.Peekb(0x4027) == 255)
             {
-                _mem.pokeb(0x4027, 15);
+                _zx81Memory.Pokeb(0x4027, 15);
             }
-
-
             else if (
                      ((k1 != oldLastK1) | ((k2 & 0xFE) != (oldLastK2 & 0xFE)))
                      & (k1 != 255 & k2 != 255)
                     )
             {
-                _mem.pokeb(16443,(byte)(_mem.peekb(16443) | 1));
+                _zx81Memory.Pokeb(16443,(byte)(_zx81Memory.Peekb(16443) | 1));
             }
         }
-
         public void ClearScreen()
         {
-            picDisplayGraphics.Clear(_disp.BackColor);
+            picDisplayGraphics.Clear(_display.BackColor);
         }
-
-
         public void HiResRoutine(int _regIX,int _regID)
         {
             int lTemp;
@@ -1677,14 +1693,12 @@ namespace Csharp81
             {
                 lHiresLoc = 0;
                 for (lTemp = 0; lTemp <= 767; lTemp++)
-                    sLastScreen[lTemp] = 0;
+                    LastScreen[lTemp] = 0;
                 for (lTemp = 0; lTemp <= 6143; lTemp++)
                     gcBufferBits[lTemp] = 0;
                 ClearScreen();
             }
         }
-       
-
     }
 
 

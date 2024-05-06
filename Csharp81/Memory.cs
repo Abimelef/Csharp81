@@ -16,18 +16,18 @@ namespace Csharp81
             mem = new int[65536];
         }
 
-        public int peekw(int addr)
+        public int Peekw(int addr)
         {
-            return peekb(addr) | (peekb((addr + 1)) * 256);
+            return Peekb(addr) | (Peekb((addr + 1)) * 256);
         }
 
-        public void pokebUnrestricted(int addr, int newByte)
+        public void PokebUnrestricted(int addr, int newByte)
         {
             mem[addr] = newByte;    
         }
 
 
-        public void pokeb(int addr, int newByte)
+        public void Pokeb(int addr, int newByte)
         {
             if (addr >= 16384)
                 // // RAM
@@ -40,16 +40,16 @@ namespace Csharp81
             }
         }
 
-        public void pokew(int addr, int word)
+        public void Pokew(int addr, int word)
         {
-            pokeb(addr, (byte)(word & 0xFF));
+            Pokeb(addr, (byte)(word & 0xFF));
 
             // pokeb((addr + 1) And &HFFFF, glMemAddrDiv256(word And &HFF00))
-            pokeb((addr + 1) & 0xFFFF, (byte)((word & 0xFF00) >> 8));
+            Pokeb((addr + 1) & 0xFFFF, (byte)((word & 0xFF00) >> 8));
         }
 
 
-        public int peekb(int addr)
+        public int Peekb(int addr)
         {
             return mem[addr];
         }

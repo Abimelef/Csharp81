@@ -2,76 +2,72 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Csharp81
 {
-    public partial class frmMainWnd : Form
+    public partial class FrmMainWnd : Form
     {
         private ZX81 _zx81;
         private Z80 _z80;
-    
-        public frmMainWnd()
+        private Memory _zx81Memory;
+        //replace with live checks on sizes
+
+        public FrmMainWnd()
         {
             InitializeComponent();
-    
         }
 
-        private void frmMainWnd_SizeChanged(object sender, EventArgs e)
+        private void FrmMainWnd_SizeChanged(object sender, EventArgs e)
         {
+            SetSizes();
+        }
 
-            int TitlebarHeight = (this.Height - this.ClientSize.Height);
-            int Borders = (this.Width-this.ClientSize.Width);
-            int NewPanelWidth; 
-            int NewPanelHeight;
-       
+
+        private void SetSizes()
+        {
+            int titleBarHeight = (this.Height - this.ClientSize.Height);
+
+            const int innerBorder = 10;
+
+            int newPanelWidth = this.ClientSize.Width - 2 * innerBorder;
+            int newPanelHeight = (int)(newPanelWidth * 0.75);
+            picDisplay.Size = new Size(newPanelWidth, newPanelHeight);
 
             if (toolStrip1.Visible)
             {
-                NewPanelWidth = this.Width - 36;
-                NewPanelHeight = (int)(NewPanelWidth * 0.75);
-                this.Height = NewPanelHeight + 83+24;
-                picDisplay.Size = new Size(NewPanelWidth, NewPanelHeight);
-                picDisplay.Location = new Point(10, 35+24);
+                this.Height = newPanelHeight + titleBarHeight + menuStrip1.Height + toolStrip1.Height + 2 * innerBorder;
+                picDisplay.Location = new Point(innerBorder, menuStrip1.Height + toolStrip1.Height + innerBorder);
             }
             else
             {
-                NewPanelWidth = this.Width - 36;
-                NewPanelHeight = (int)(NewPanelWidth * 0.75);
-                this.Height = NewPanelHeight + 83;
-                picDisplay.Size = new Size(NewPanelWidth, NewPanelHeight);
-                picDisplay.Location = new Point(10, 35);
+                this.Height = newPanelHeight + titleBarHeight + menuStrip1.Height + 2 * innerBorder;
+                picDisplay.Location = new Point(innerBorder, menuStrip1.Height + innerBorder);
             }
-
-            Properties.Settings.Default.stgFormSize = this.Size;
-            Properties.Settings.Default.Save();
-
         }
 
-        private void frmMainWnd_Load(object sender, EventArgs e)
+
+
+        private void FrmMainWnd_Load(object sender, EventArgs e)
         {
             this.KeyPreview = true;
-
             toolStrip1.Visible = !Properties.Settings.Default.stgHideTB;
             showToolbarToolStripMenuItem.Checked = !Properties.Settings.Default.stgHideTB;
             hideScreenInFastModeToolStripMenuItem.Checked = Properties.Settings.Default.stgHideScreenInFastMode;
             this.Size = Properties.Settings.Default.stgFormSize;
-            frmMainWnd_SizeChanged(sender, e);
+
         }
 
-     //   private void button1_Click(object sender, EventArgs e)
-     /// <summary>
-     ///   {
-     /// </summary>
-      //      int a = 1;
-            
-     //   }
 
-        private void frmMainWnd_KeyDown(object sender, KeyEventArgs e)
+
+        private void FrmMainWnd_KeyDown(object sender, KeyEventArgs e)
         {
             if (!e.Alt)
             {
@@ -85,53 +81,48 @@ namespace Csharp81
         {
             if (keyData == Keys.Enter)
             {
-
-
                 _zx81.doEnterKey(false);
                 return true;
             }
-            else if (keyData == (Keys.Enter|Keys.Shift))
-           {
+            else if (keyData == (Keys.Enter | Keys.Shift))
+            {
                 _zx81.doEnterKey(true);
                 return true;
             }
-            else 
-            { 
+            else
+            {
                 return base.ProcessCmdKey(ref msg, keyData);
             }
-      }
+        }
 
-        private void frmMainWnd_KeyUp(object sender, KeyEventArgs e)
+        private void FrmMainWnd_KeyUp(object sender, KeyEventArgs e)
         {
             _zx81.doKey(false, e);
         }
 
-        private void frmMainWnd_Shown(object sender, EventArgs e)
+        private void FrmMainWnd_Shown(object sender, EventArgs e)
         {
-            this.Refresh();
-            KeyPresses keys = new KeyPresses();
-            Memory memory = new Memory();
-            _zx81 = new ZX81(memory, picDisplay, keys, this);
-            _z80 = new Z80(memory, keys, _zx81);
 
-            
-
+            _zx81Memory = new();
+            _zx81 = new ZX81(_zx81Memory, picDisplay, this);
+            _z80 = new Z80(_zx81Memory, _zx81);
             _z80.Execute();
         }
 
-        private void zX81KeyboardToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ZX81KeyboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmKeyboard _frm = new frmKeyboard();
+            frmKeyboard _frm = new();
             _frm.Show();
         }
 
-        private void frmMainWnd_FormClosed(object sender, FormClosedEventArgs e)
+        private void FrmMainWnd_FormClosed(object sender, FormClosedEventArgs e)
         {
-   
+            Properties.Settings.Default.stgFormSize = this.Size;
+            Properties.Settings.Default.Save();
             Environment.Exit(1);
         }
 
-        private void specifyTapeDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SpecifyTapeDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var fbd = new FolderBrowserDialog
             {
@@ -153,25 +144,25 @@ namespace Csharp81
 
         }
 
-        private void resetZX81ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResetZX81ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             _z80.Z80Reset();
         }
 
-        private void aboutC81ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AboutC81ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmAbout _frmAbout = new frmAbout   ();
+            frmAbout _frmAbout = new();
             _frmAbout.Show();
         }
 
-        private void displaySizeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void DisplaySizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            frmOptions _frmAbout = new frmOptions(this,_zx81);
-            _frmAbout.Show();
+            FrmOptions _frmOptions = new(this, _zx81);
+            _frmOptions.Show();
 
         }
 
-        private void showToolbarToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ShowToolbarToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showToolbarToolStripMenuItem.Checked = !showToolbarToolStripMenuItem.Checked;
 
@@ -190,21 +181,41 @@ namespace Csharp81
 
             }
             Properties.Settings.Default.Save();
-            frmMainWnd_SizeChanged(sender, e);
+            FrmMainWnd_SizeChanged(sender, e);
             this.Refresh();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
+            //Properties.Settings.Default.stgFormSize = this.Size;
+            //Properties.Settings.Default.Save(); 
             Environment.Exit(0);
         }
 
-        private void hideScreenInFastModeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HideScreenInFastModeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            hideScreenInFastModeToolStripMenuItem.Checked = !hideScreenInFastModeToolStripMenuItem.Checked; 
+            hideScreenInFastModeToolStripMenuItem.Checked = !hideScreenInFastModeToolStripMenuItem.Checked;
             Properties.Settings.Default.stgHideScreenInFastMode = hideScreenInFastModeToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
             _zx81.bHideInFastMode = hideScreenInFastModeToolStripMenuItem.Checked;
         }
+
+
+
+        private void tsbReset_Click(object sender, EventArgs e)
+        {
+            _z80.Z80Reset();
+        }
+
+        private void tsbMemoCalc_Click(object sender, EventArgs e)
+        {
+            frmMemoCalc _frmMemoCalc = new frmMemoCalc(_zx81, _z80, _zx81Memory);
+            _frmMemoCalc.ShowDialog();
+
+        }
+
+
+
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Csharp81
 {
-    internal class Z80
+    public class Z80
     {
 
 
@@ -98,14 +98,12 @@ namespace Csharp81
         private Boolean[] Parity = new Boolean[257];
 
         private Memory _mem; //new Memory();
-        private KeyPresses _kb; //= new KeyPresses();
         private ZX81 _zx81;
 
 
-        public Z80(Memory mem, KeyPresses kb, ZX81 z)
+        public Z80(Memory mem, ZX81 z)
         {
             _mem = mem;
-            _kb = kb;
             _zx81 = z;
             intIFF1 = true;
             intIFF2 = true;
@@ -438,7 +436,7 @@ namespace Csharp81
                 case 6:
                     {
                         // 006 RLC (HL)
-                        _mem.pokeb(regHL, Rlc(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Rlc(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -494,7 +492,7 @@ namespace Csharp81
                 case 14:
                     {
                         // 014 RRC (HL)
-                        _mem.pokeb(regHL, Rrc(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Rrc(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -550,7 +548,7 @@ namespace Csharp81
                 case 22:
                     {
                         // 022 RL (HL)
-                        _mem.pokeb(regHL, Rl(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Rl(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -606,7 +604,7 @@ namespace Csharp81
                 case 30:
                     {
                         // 030 RR (HL)
-                        _mem.pokeb(regHL, Rr(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Rr(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -655,7 +653,7 @@ namespace Csharp81
                     }
                 case 38: // SLA (HL)
                     {
-                        _mem.pokeb(regHL, sla(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, sla(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -703,7 +701,7 @@ namespace Csharp81
                     }
                 case 46: // SRA (HL)
                     {
-                        _mem.pokeb(regHL, Sra(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Sra(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -751,7 +749,7 @@ namespace Csharp81
                     }
                 case 54: // SLS (HL)
                     {
-                        _mem.pokeb(regHL, Sls(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Sls(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -799,7 +797,7 @@ namespace Csharp81
                     }
                 case 62: // SRL (HL)
                     {
-                        _mem.pokeb(regHL, Srl(_mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, Srl(_mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -854,7 +852,7 @@ namespace Csharp81
                 case 70:
                     {
                         // 070 BIT 0,(HL)
-                        Bit(1, _mem.peekb(regHL));
+                        Bit(1, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -903,7 +901,7 @@ namespace Csharp81
                     }
                 case 78: // BIT 1,(HL)
                     {
-                        Bit(2, _mem.peekb(regHL));
+                        Bit(2, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -951,7 +949,7 @@ namespace Csharp81
                     }
                 case 86: // BIT 2,(HL)
                     {
-                        Bit(4, _mem.peekb(regHL));
+                        Bit(4, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -999,7 +997,7 @@ namespace Csharp81
                     }
                 case 94: // BIT 3,(HL)
                     {
-                        Bit(8, _mem.peekb(regHL));
+                        Bit(8, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -1047,7 +1045,7 @@ namespace Csharp81
                     }
                 case 102: // BIT 4,(HL)
                     {
-                        Bit(0x10, _mem.peekb(regHL));
+                        Bit(0x10, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -1095,7 +1093,7 @@ namespace Csharp81
                     }
                 case 110: // BIT 5,(HL)
                     {
-                        Bit(0x20, _mem.peekb(regHL));
+                        Bit(0x20, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -1150,7 +1148,7 @@ namespace Csharp81
                 case 118:
                     {
                         // 118 BIT 6,(HL)
-                        Bit(0x40, _mem.peekb(regHL));
+                        Bit(0x40, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -1206,7 +1204,7 @@ namespace Csharp81
                 case 126:
                     {
                         // 126 BIT 7,(HL)
-                        Bit(0x80, _mem.peekb(regHL));
+                        Bit(0x80, _mem.Peekb(regHL));
                         return 12;
 
                     }
@@ -1255,7 +1253,7 @@ namespace Csharp81
                     }
                 case 134: // RES 0,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(0x1, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(0x1, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1303,7 +1301,7 @@ namespace Csharp81
                     }
                 case 142: // RES 1,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(2, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(2, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1351,7 +1349,7 @@ namespace Csharp81
                     }
                 case 150: // RES 2,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(4, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(4, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1399,7 +1397,7 @@ namespace Csharp81
                     }
                 case 158: // RES 3,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(8, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(8, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1447,7 +1445,7 @@ namespace Csharp81
                     }
                 case 166: // RES 4,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(0x10, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(0x10, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1499,7 +1497,7 @@ namespace Csharp81
                     }
                 case 174: // RES 5,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(0x20, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(0x20, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1547,7 +1545,7 @@ namespace Csharp81
                     }
                 case 182: // RES 6,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(0x40, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(0x40, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1595,7 +1593,7 @@ namespace Csharp81
                     }
                 case 190: // RES 7,(HL)
                     {
-                        _mem.pokeb(regHL, BitRes(0x80, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitRes(0x80, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1643,7 +1641,7 @@ namespace Csharp81
                     }
                 case 198: // SET 0,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(1, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(1, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1691,7 +1689,7 @@ namespace Csharp81
                     }
                 case 206: // SET 1,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(2, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(2, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1739,7 +1737,7 @@ namespace Csharp81
                     }
                 case 214: // SET 2,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(0x4, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(0x4, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1787,7 +1785,7 @@ namespace Csharp81
                     }
                 case 222: // SET 3,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(0x8, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(0x8, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1835,7 +1833,7 @@ namespace Csharp81
                     }
                 case 230: // SET 4,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(0x10, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(0x10, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1883,7 +1881,7 @@ namespace Csharp81
                     }
                 case 238: // SET 5,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(0x20, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(0x20, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1931,7 +1929,7 @@ namespace Csharp81
                     }
                 case 246: // SET 6,(HL)
                     {
-                        _mem.pokeb(regHL, BitSet(0x40, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(0x40, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -1982,7 +1980,7 @@ namespace Csharp81
                 case 254:
                     {
                         // 254 SET 7,(HL)
-                        _mem.pokeb(regHL, BitSet(0x80, _mem.peekb(regHL)));
+                        _mem.Pokeb(regHL, BitSet(0x80, _mem.Peekb(regHL)));
                         return 15;
 
                     }
@@ -2069,7 +2067,7 @@ namespace Csharp81
                 case 67:
                     {
                         // 067 LD (nn),BC
-                        _mem.pokew(Nxtpcw(), GetBC());
+                        _mem.Pokew(Nxtpcw(), GetBC());
                         return 20;
 
                     }
@@ -2126,7 +2124,7 @@ namespace Csharp81
                 case 75:
                     {
                         // 075 LD BC,(nn)
-                        SetBC(_mem.peekw(Nxtpcw()));
+                        SetBC(_mem.Peekw(Nxtpcw()));
                         return 20;
 
                     }
@@ -2186,7 +2184,7 @@ namespace Csharp81
                 case 83:
                     {
                         // 083 LD (nn),DE
-                        _mem.pokew(Nxtpcw(), regDE);
+                        _mem.Pokew(Nxtpcw(), regDE);
                         return 20;
 
                     }
@@ -2243,7 +2241,7 @@ namespace Csharp81
                 case 91:
                     {
                         // 091 LD DE,(nn)
-                        regDE = (int)_mem.peekw(Nxtpcw());
+                        regDE = (int)_mem.Peekw(Nxtpcw());
                         return 20;
 
                     }
@@ -2298,7 +2296,7 @@ namespace Csharp81
                     }
                 case 99: // LD (nn),HL
                     {
-                        _mem.pokew(Nxtpcw(), regHL);
+                        _mem.Pokew(Nxtpcw(), regHL);
                         return 20;
 
                     }
@@ -2347,7 +2345,7 @@ namespace Csharp81
                     }
                 case 107: // LD HL,(nn)
                     {
-                        regHL = (int)_mem.peekw(Nxtpcw());
+                        regHL = (int)_mem.Peekw(Nxtpcw());
                         return 20;
 
                     }
@@ -2398,7 +2396,7 @@ namespace Csharp81
                     }
                 case 115: // LD (nn),SP
                     {
-                        _mem.pokew(Nxtpcw(), regSP);
+                        _mem.Pokew(Nxtpcw(), regSP);
                         return 20;
 
                     }
@@ -2446,7 +2444,7 @@ namespace Csharp81
                     }
                 case 123: // LD SP,(nn)
                     {
-                        regSP = (int)_mem.peekw(Nxtpcw());
+                        regSP = (int)_mem.Peekw(Nxtpcw());
                         return 20;
 
                     }
@@ -2484,7 +2482,7 @@ namespace Csharp81
                     }
                 case 160: // LDI
                     {
-                        _mem.pokeb(regDE, _mem.peekb(regHL));
+                        _mem.Pokeb(regDE, _mem.Peekb(regHL));
 
                         //f3 = Conversions.ToBoolean(F_3 & _mem.peekb(regHL) + regA); // // TOCHECK: Is this correct?
                         //f5 = Conversions.ToBoolean(2L & _mem.peekb(regHL) + regA);   // // TOCHECK: Is this correct?
@@ -2504,7 +2502,7 @@ namespace Csharp81
                     {
                         c = fC;
 
-                        Cp_a(_mem.peekb(regHL));
+                        Cp_a(_mem.Peekb(regHL));
                         regHL = (int)Inc16(regHL);
                         SetBC(Dec16(GetBC()));
 
@@ -2516,7 +2514,7 @@ namespace Csharp81
                     }
                 case 162: // INI
                     {
-                        _mem.pokeb(regHL, Inb(GetBC()));
+                        _mem.Pokeb(regHL, Inb(GetBC()));
                         b = Qdec8(regB);
                         regB = (int)b;
                         regHL = (int)Inc16(regHL);
@@ -2531,7 +2529,7 @@ namespace Csharp81
                     {
                         b = Qdec8(regB);
                         regB = (int)b;
-                        Outb(GetBC(), _mem.peekb(regHL));
+                        Outb(GetBC(), _mem.Peekb(regHL));
                         regHL = (int)Inc16(regHL);
 
                         fZ = b == 0L;
@@ -2544,7 +2542,7 @@ namespace Csharp81
                 // /* xxD */
                 case 168: // LDD
                     {
-                        _mem.pokeb(regDE, _mem.peekb(regHL));
+                        _mem.Pokeb(regDE, _mem.Peekb(regHL));
 
                         //f3 = Conversions.ToBoolean(F_3 & _mem.peekb(regHL) + regA); // // TOCHECK: Is this correct?
                         //f5 = Conversions.ToBoolean(2L & _mem.peekb(regHL) + regA);   // // TOCHECK: Is this correct?
@@ -2564,7 +2562,7 @@ namespace Csharp81
                     {
                         c = fC;
 
-                        Cp_a(_mem.peekb(regHL));
+                        Cp_a(_mem.Peekb(regHL));
                         regHL = (int)Dec16(regHL);
                         SetBC(Dec16(GetBC()));
 
@@ -2576,7 +2574,7 @@ namespace Csharp81
                     }
                 case 170: // IND
                     {
-                        _mem.pokeb(regHL, Inb(GetBC()));
+                        _mem.Pokeb(regHL, Inb(GetBC()));
                         b = Qdec8(regB);
                         regB = (int)b;
                         regHL = (int)Dec16(regHL);
@@ -2591,7 +2589,7 @@ namespace Csharp81
                     {
                         count = Qdec8(regB);
                         regB = (int)count;
-                        Outb(GetBC(), _mem.peekb(regHL));
+                        Outb(GetBC(), _mem.Peekb(regHL));
                         regHL = (int)Dec16(regHL);
 
                         fZ = count == 0L;
@@ -2613,7 +2611,7 @@ namespace Csharp81
                         intRTemp = intRTemp - 2;
                         do
                         {
-                            _mem.pokeb(dest, _mem.peekb(from));
+                            _mem.Pokeb(dest, _mem.Peekb(from));
                             from = from + 1 & 65535;
                             dest = dest + 1 & 65535;
                             count = count - 1;
@@ -2653,7 +2651,7 @@ namespace Csharp81
                     {
                         c = fC;
 
-                        Cp_a(_mem.peekb(regHL));
+                        Cp_a(_mem.Peekb(regHL));
                         regHL = (int)Inc16(regHL);
                         SetBC(Dec16(GetBC()));
 
@@ -2674,7 +2672,7 @@ namespace Csharp81
                     }
                 case 178: // INIR
                     {
-                        _mem.pokeb(regHL, Inb(GetBC()));
+                        _mem.Pokeb(regHL, Inb(GetBC()));
                         b = Qdec8(regB);
                         regB = (int)b;
                         regHL = (int)Inc16(regHL);
@@ -2697,7 +2695,7 @@ namespace Csharp81
                     {
                         b = Qdec8(regB);
                         regB = (int)b;
-                        Outb(GetBC(), _mem.peekb(regHL));
+                        Outb(GetBC(), _mem.Peekb(regHL));
                         regHL = (int)Inc16(regHL);
 
                         fZ = true;
@@ -2727,7 +2725,7 @@ namespace Csharp81
                         intRTemp = intRTemp - 2;
                         do
                         {
-                            _mem.pokeb(dest, _mem.peekb(from));
+                            _mem.Pokeb(dest, _mem.Peekb(from));
                             from = from - 1 & 65535;
                             dest = dest - 1 & 65535;
                             count = count - 1;
@@ -2770,7 +2768,7 @@ namespace Csharp81
                     {
                         c = fC;
 
-                        Cp_a(_mem.peekb(regHL));
+                        Cp_a(_mem.Peekb(regHL));
                         regHL = (int)Dec16(regHL);
                         SetBC(Dec16(GetBC()));
 
@@ -2790,7 +2788,7 @@ namespace Csharp81
                     }
                 case 186: // INDR
                     {
-                        _mem.pokeb(regHL, Inb(GetBC()));
+                        _mem.Pokeb(regHL, Inb(GetBC()));
                         b = Qdec8(regB);
                         regB = (int)b;
                         regHL = (int)Dec16(regHL);
@@ -2813,7 +2811,7 @@ namespace Csharp81
                     {
                         b = Qdec8(regB);
                         regB = (int)b;
-                        Outb(GetBC(), _mem.peekb(regHL));
+                        Outb(GetBC(), _mem.Peekb(regHL));
                         regHL = (int)Dec16(regHL);
 
                         fZ = true;
@@ -2882,12 +2880,12 @@ namespace Csharp81
             int q;
 
             ans = regA;
-            t = _mem.peekb(regHL);
+            t = _mem.Peekb(regHL);
             q = t;
 
             t = (t * 16) | (ans & 0xF);
             ans = (ans & 0xF0) | (q / 16);
-            _mem.pokeb(regHL, t & 0xFF);
+            _mem.Pokeb(regHL, t & 0xFF);
 
             fS = (ans & F_S) != 0L;
             f3 = (ans & F_3) != 0L;
@@ -2906,12 +2904,12 @@ namespace Csharp81
             int q;
 
             ans = regA;
-            t = _mem.peekb(regHL);
+            t = _mem.Peekb(regHL);
             q = t;
 
             t = (t / 16) | (ans * 16);
             ans = (ans & 0xF0) | (q & 0xF);
-            _mem.pokeb(regHL, t);
+            _mem.Pokeb(regHL, t);
 
             fS = (ans & F_S) != 0L;
             f3 = (ans & F_3) != 0L;
@@ -2937,534 +2935,534 @@ namespace Csharp81
             {
                 case 0: // RLC B
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 1: // RLC C
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 2: // RLC D
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 3: // RLC E
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 4: // RLC H
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 5: // RLC L
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 6: // RLC (HL)
                     {
-                        _mem.pokeb(z, Rlc(_mem.peekb(z)));
+                        _mem.Pokeb(z, Rlc(_mem.Peekb(z)));
                         break;
                     }
                 case 7: // RLC A
                     {
-                        op = Rlc(_mem.peekb(z));
+                        op = Rlc(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
 
                 case 8: // RRC B
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 9: // RRC C
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 10: // RRC D
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 11: // RRC E
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 12: // RRC H
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 13: // RRC L
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 14: // RRC (HL)
                     {
-                        _mem.pokeb(z, Rrc(_mem.peekb(z)));
+                        _mem.Pokeb(z, Rrc(_mem.Peekb(z)));
                         break;
                     }
                 case 15: // RRC A
                     {
-                        op = Rrc(_mem.peekb(z));
+                        op = Rrc(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 16: // RL B
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 17: // RL C
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 18: // RL D
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 19: // RL E
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 20: // RL H
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 21: // RL L
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 22: // RL (HL)
                     {
-                        _mem.pokeb(z, Rl(_mem.peekb(z)));
+                        _mem.Pokeb(z, Rl(_mem.Peekb(z)));
                         break;
                     }
                 case 23: // RL A
                     {
-                        op = Rl(_mem.peekb(z));
+                        op = Rl(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 24: // RR B
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 25: // RR C
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 26: // RR D
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 27: // RR E
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 28: // RR H
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 29: // RR L
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 30: // RR (HL)
                     {
-                        _mem.pokeb(z, Rl(_mem.peekb(z)));
+                        _mem.Pokeb(z, Rl(_mem.Peekb(z)));
                         break;
                     }
                 case 31: // RR A
                     {
-                        op = Rr(_mem.peekb(z));
+                        op = Rr(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 32: // SLA B
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 33: // SLA C
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 34: // SLA D
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 35: // SLA E
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 36: // SLA H
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 37: // SLA L
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 38: // SLA (HL)
                     {
-                        _mem.pokeb(z, sla(_mem.peekb(z)));
+                        _mem.Pokeb(z, sla(_mem.Peekb(z)));
                         break;
                     }
                 case 39: // SLA A
                     {
-                        op = sla(_mem.peekb(z));
+                        op = sla(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 40: // SRA B
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 41: // SRA C
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 42: // SRA D
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 43: // SRA E
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 44: // SRA H
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 45: // SRA L
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 46: // SRA (HL)
                     {
-                        _mem.pokeb(z, Sra(_mem.peekb(z)));
+                        _mem.Pokeb(z, Sra(_mem.Peekb(z)));
                         break;
                     }
                 case 47: // SRA A
                     {
-                        op = Sra(_mem.peekb(z));
+                        op = Sra(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 48: // SLS B
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         regB = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 49: // SLS C
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         regC = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 50: // SLS D
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         SetD(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 51: // SLS E
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         SetE(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 52: // SLS H
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         SetH(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 53: // SLS L
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         SetL(op);
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case 54: // SLS (HL)
                     {
-                        _mem.pokeb(z, Sls(_mem.peekb(z)));
+                        _mem.Pokeb(z, Sls(_mem.Peekb(z)));
                         break;
                     }
                 case 55: // SLS A
                     {
-                        op = Sls(_mem.peekb(z));
+                        op = Sls(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
 
 
                 case 62: // SRL (HL)
                     {
-                        _mem.pokeb(z, Srl(_mem.peekb(z)));
+                        _mem.Pokeb(z, Srl(_mem.Peekb(z)));
                         break;
                     }
                 case 63: // SRL A
                     {
-                        op = Srl(_mem.peekb(z));
+                        op = Srl(_mem.Peekb(z));
                         regA = (int)op;
-                        _mem.pokeb(z, op);
+                        _mem.Pokeb(z, op);
                         break;
                     }
                 case var @case when 64L <= @case && @case <= 71: // BIT 0,B
                     {
-                        Bit(0x1, _mem.peekb(z));
+                        Bit(0x1, _mem.Peekb(z));
                         break;
                     }
                 case var case1 when 72L <= case1 && case1 <= 79: // BIT 1,B
                     {
-                        Bit(0x2, _mem.peekb(z));
+                        Bit(0x2, _mem.Peekb(z));
                         break;
                     }
                 case var case2 when 80L <= case2 && case2 <= 87: // BIT 2,B
                     {
-                        Bit(0x4, _mem.peekb(z));
+                        Bit(0x4, _mem.Peekb(z));
                         break;
                     }
                 case var case3 when 88L <= case3 && case3 <= 95: // BIT 3,B
                     {
-                        Bit(0x8, _mem.peekb(z));
+                        Bit(0x8, _mem.Peekb(z));
                         break;
                     }
 
                 case var case4 when 96L <= case4 && case4 <= 103: // BIT 4,B
                     {
-                        Bit(0x10, _mem.peekb(z));
+                        Bit(0x10, _mem.Peekb(z));
                         break;
                     }
                 case var case5 when 104L <= case5 && case5 <= 111: // BIT 5,B
                     {
-                        Bit(0x20, _mem.peekb(z));
+                        Bit(0x20, _mem.Peekb(z));
                         break;
                     }
                 case var case6 when 112L <= case6 && case6 <= 119: // BIT 6,B
                     {
-                        Bit(0x40, _mem.peekb(z));
+                        Bit(0x40, _mem.Peekb(z));
                         break;
                     }
                 case var case7 when 120L <= case7 && case7 <= 127: // BIT 7,B
                     {
-                        Bit(0x80, _mem.peekb(z));
+                        Bit(0x80, _mem.Peekb(z));
                         break;
                     }
                 case 134: // RES 0,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x1, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x1, _mem.Peekb(z)));
                         break;
                     }
                 case 142: // RES 1,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x2, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x2, _mem.Peekb(z)));
                         break;
                     }
                 case 150: // RES 2,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x4, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x4, _mem.Peekb(z)));
                         break;
                     }
                 case 158: // RES 3,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x8, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x8, _mem.Peekb(z)));
                         break;
                     }
                 case 166: // RES 4,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x10, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x10, _mem.Peekb(z)));
                         break;
                     }
                 case 172: // RES 5,H
                     {
-                        SetH(BitRes(0x20, _mem.peekb(z)));
-                        _mem.pokeb(z, GetH());
+                        SetH(BitRes(0x20, _mem.Peekb(z)));
+                        _mem.Pokeb(z, GetH());
                         break;
                     }
                 case 174: // RES 5,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x20, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x20, _mem.Peekb(z)));
                         break;
                     }
                 case 175: // RES 5,A
                     {
-                        regA = (int)BitRes(0x20, _mem.peekb(z));
-                        _mem.pokeb(z, regA);
+                        regA = (int)BitRes(0x20, _mem.Peekb(z));
+                        _mem.Pokeb(z, regA);
                         break;
                     }
                 case 182: // RES 6,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x40, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x40, _mem.Peekb(z)));
                         break;
                     }
                 case 190: // RES 7,(HL)
                     {
-                        _mem.pokeb(z, BitRes(0x80, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitRes(0x80, _mem.Peekb(z)));
                         break;
                     }
                 case 198: // SET 0,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x1, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x1, _mem.Peekb(z)));
                         break;
                     }
                 case 206: // SET 1,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x2, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x2, _mem.Peekb(z)));
                         break;
                     }
                 case 214: // SET 2,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x4, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x4, _mem.Peekb(z)));
                         break;
                     }
                 case 222: // SET 3,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x8, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x8, _mem.Peekb(z)));
                         break;
                     }
                 case 230: // SET 4,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x10, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x10, _mem.Peekb(z)));
                         break;
                     }
                 case 238: // SET 5,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x20, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x20, _mem.Peekb(z)));
                         break;
                     }
                 case 246: // SET 6,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x40, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x40, _mem.Peekb(z)));
                         break;
                     }
                 case 254: // SET 7,(HL)
                     {
-                        _mem.pokeb(z, BitSet(0x80, _mem.peekb(z)));
+                        _mem.Pokeb(z, BitSet(0x80, _mem.Peekb(z)));
                         break;
                     }
                 case 255: // SET 7,A
                     {
-                        regA = (int)BitSet(0x80, _mem.peekb(z));
-                        _mem.pokeb(z, regA);
+                        regA = (int)BitSet(0x80, _mem.Peekb(z));
+                        _mem.Pokeb(z, regA);
                         break;
                     }
 
@@ -3690,7 +3688,7 @@ namespace Csharp81
         private int Popw()
         {
 
-            int t = _mem.peekb(regSP) | (_mem.peekb(regSP + 1) * 256);
+            int t = _mem.Peekb(regSP) | (_mem.Peekb(regSP + 1) * 256);
             regSP = (regSP + 2 & 0xFFFF);
             return t;
         }
@@ -3702,7 +3700,7 @@ namespace Csharp81
         private void Pushw(int word)
         {
             regSP = (int)(regSP - 2 & 0xFFFF);
-            _mem.pokew(regSP, word);
+            _mem.Pokew(regSP, word);
         }
         private int Rl(int ans)
         {
@@ -4032,7 +4030,7 @@ namespace Csharp81
                     case 2:
                         {
                             // 002 LD (BC),A
-                            _mem.pokeb(GetBC(), regA);
+                            _mem.Pokeb(GetBC(), regA);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4088,7 +4086,7 @@ namespace Csharp81
                     case 10:
                         {
                             // 010 LD A,(BC)
-                            regA = (int)_mem.peekb(GetBC());
+                            regA = (int)_mem.Peekb(GetBC());
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4159,7 +4157,7 @@ namespace Csharp81
                     case 18:
                         {
                             // 018 LD (DE),A
-                            _mem.pokeb(regDE, regA);
+                            _mem.Pokeb(regDE, regA);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4218,7 +4216,7 @@ namespace Csharp81
                     case 26:
                         {
                             // 026 LD A,(DE)
-                            regA = (int)_mem.peekb(regDE);
+                            regA = (int)_mem.Peekb(regDE);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4286,7 +4284,7 @@ namespace Csharp81
                     case 34:
                         {
                             // 034 LD (nn),HL
-                            _mem.pokew(Nxtpcw(), regHL);
+                            _mem.Pokew(Nxtpcw(), regHL);
                             local_tstates = local_tstates + 16;
                             break;
                         }
@@ -4354,7 +4352,7 @@ namespace Csharp81
                     case 42:
                         {
                             // 042 LD HL,(nn)
-                            regHL = _mem.peekw(Nxtpcw());
+                            regHL = _mem.Peekw(Nxtpcw());
                             local_tstates = local_tstates + 16;
                             break;
                         }
@@ -4422,7 +4420,7 @@ namespace Csharp81
                     case 50:
                         {
                             // 050 LD (nn),A
-                            _mem.pokeb(Nxtpcw(), regA);
+                            _mem.Pokeb(Nxtpcw(), regA);
                             local_tstates = local_tstates + 13;
                             break;
                         }
@@ -4436,21 +4434,21 @@ namespace Csharp81
                     case 52:
                         {
                             // 052 INC (HL)
-                            _mem.pokeb(regHL, Inc8(_mem.peekb(regHL)));
+                            _mem.Pokeb(regHL, Inc8(_mem.Peekb(regHL)));
                             local_tstates = local_tstates + 11;
                             break;
                         }
                     case 53:
                         {
                             // 053 DEC (HL)
-                            _mem.pokeb(regHL, Dec8(_mem.peekb(regHL)));
+                            _mem.Pokeb(regHL, Dec8(_mem.Peekb(regHL)));
                             local_tstates = local_tstates + 11;
                             break;
                         }
                     case 54:
                         {
                             // 054 LD (HL),n
-                            _mem.pokeb(regHL, Nxtpcb());
+                            _mem.Pokeb(regHL, Nxtpcb());
                             local_tstates = local_tstates + 10;
                             break;
                         }
@@ -4492,7 +4490,7 @@ namespace Csharp81
                     case 58:
                         {
                             // 058 LD A,(nn)
-                            regA = (int)_mem.peekb(Nxtpcw());
+                            regA = (int)_mem.Peekb(Nxtpcw());
                             local_tstates = local_tstates + 13;
                             break;
                         }
@@ -4576,7 +4574,7 @@ namespace Csharp81
                     case 70:
                         {
                             // LD B,(HL)
-                            regB = (int)_mem.peekb(regHL);
+                            regB = (int)_mem.Peekb(regHL);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4631,7 +4629,7 @@ namespace Csharp81
                     case 78:
                         {
                             // 78 ' LD C,(HL)
-                            regC = (int)_mem.peekb(regHL);
+                            regC = (int)_mem.Peekb(regHL);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4680,7 +4678,7 @@ namespace Csharp81
                         }
                     case 86: // LD D,(HL)
                         {
-                            SetD(_mem.peekb(regHL));
+                            SetD(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4728,7 +4726,7 @@ namespace Csharp81
                         }
                     case 94: // LD E,(HL)
                         {
-                            SetE(_mem.peekb(regHL));
+                            SetE(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4776,7 +4774,7 @@ namespace Csharp81
                         }
                     case 102: // LD H,(HL)
                         {
-                            SetH(_mem.peekb(regHL));
+                            SetH(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4824,7 +4822,7 @@ namespace Csharp81
                         }
                     case 110: // LD L,(HL)
                         {
-                            SetL(_mem.peekb(regHL));
+                            SetL(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4837,41 +4835,41 @@ namespace Csharp81
                     case 112:
                         {
                             // 112 ' LD (HL),B
-                            _mem.pokeb(regHL, regB);
+                            _mem.Pokeb(regHL, regB);
                             local_tstates = local_tstates + 7;
                             break;
                         }
                     case 113:
                         {
                             // 113 ' LD (HL),C
-                            _mem.pokeb(regHL, regC);
+                            _mem.Pokeb(regHL, regC);
                             local_tstates = local_tstates + 7;
                             break;
                         }
                     case 114:
                         {
                             // 114 ' LD (HL),D
-                            _mem.pokeb(regHL, GetD());
+                            _mem.Pokeb(regHL, GetD());
                             local_tstates = local_tstates + 7;
                             break;
                         }
                     case 115:
                         {
                             // 115 ' LD (HL),E
-                            _mem.pokeb(regHL, GetE());
+                            _mem.Pokeb(regHL, GetE());
                             local_tstates = local_tstates + 7;
                             break;
                         }
 
                     case 116: // LD (HL),H
                         {
-                            _mem.pokeb(regHL, GetH());
+                            _mem.Pokeb(regHL, GetH());
                             local_tstates = local_tstates + 7;
                             break;
                         }
                     case 117: // LD (HL),L
                         {
-                            _mem.pokeb(regHL, GetL());
+                            _mem.Pokeb(regHL, GetL());
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4884,7 +4882,7 @@ namespace Csharp81
                         }
                     case 119: // LD (HL),A
                         {
-                            _mem.pokeb(regHL, regA);
+                            _mem.Pokeb(regHL, regA);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4933,7 +4931,7 @@ namespace Csharp81
                     case 126:
                         {
                             // 126 ' LD A,(HL)
-                            regA = (int)_mem.peekb(regHL);
+                            regA = (int)_mem.Peekb(regHL);
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -4982,7 +4980,7 @@ namespace Csharp81
                         }
                     case 134: // ADD A,(HL)
                         {
-                            Add_a(_mem.peekb(regHL));
+                            Add_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5030,7 +5028,7 @@ namespace Csharp81
                         }
                     case 142: // ADC A,(HL)
                         {
-                            Adc_a(_mem.peekb(regHL));
+                            Adc_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5078,7 +5076,7 @@ namespace Csharp81
                         }
                     case 150: // SUB (HL)
                         {
-                            Sub_a(_mem.peekb(regHL));
+                            Sub_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5126,7 +5124,7 @@ namespace Csharp81
                         }
                     case 158: // SBC A,(HL)
                         {
-                            Sbc_a(_mem.peekb(regHL));
+                            Sbc_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5176,7 +5174,7 @@ namespace Csharp81
                         }
                     case 166: // AND (HL)
                         {
-                            And_a(_mem.peekb(regHL));
+                            And_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5225,7 +5223,7 @@ namespace Csharp81
                         }
                     case 174: // XOR (HL)
                         {
-                            Xor_a(_mem.peekb(regHL));
+                            Xor_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5282,7 +5280,7 @@ namespace Csharp81
                         }
                     case 182: // OR (HL)
                         {
-                            Or_a(_mem.peekb(regHL));
+                            Or_a(_mem.Peekb(regHL));
                             local_tstates = local_tstates + 7;
                             break;
                         }
@@ -5331,7 +5329,7 @@ namespace Csharp81
                         }
                     case 190: // CP (HL)
                         {
-                            Cp_a(_mem.peekb(regHL));
+                            Cp_a(_mem.Peekb(regHL));
 
                             if (regPC == 16803)
                             {
@@ -5387,7 +5385,7 @@ namespace Csharp81
                         }
                     case 195: // JP nn
                         {
-                            regPC = (int)_mem.peekw(regPC);
+                            regPC = (int)_mem.Peekw(regPC);
                             local_tstates = local_tstates + 10;
                             break;
                         }
@@ -5695,8 +5693,8 @@ namespace Csharp81
                         {
                             // 227 ' EX (SP),HL
                             lTemp = regHL;
-                            regHL = (int)_mem.peekw(regSP);
-                            _mem.pokew(regSP, lTemp);
+                            regHL = (int)_mem.Peekw(regSP);
+                            _mem.Pokew(regSP, lTemp);
                             local_tstates = local_tstates + 19;
                             break;
                         }
@@ -6064,7 +6062,7 @@ namespace Csharp81
                     }
                 case 34: // LD (nn),ID
                     {
-                        _mem.pokew(Nxtpcw(), regID);
+                        _mem.Pokew(Nxtpcw(), regID);
                         return 20;
 
                     }
@@ -6110,7 +6108,7 @@ namespace Csharp81
                     }
                 case 42: // LD ID,(nn)
                     {
-                        regID = (int)_mem.peekw(Nxtpcw());
+                        regID = (int)_mem.Peekw(Nxtpcw());
                         return 20;
 
                     }
@@ -6149,21 +6147,21 @@ namespace Csharp81
                 case 52: // INC (ID+d)
                     {
                         lTemp = Id_d();
-                        _mem.pokeb(lTemp, Inc8(_mem.peekb(lTemp)));
+                        _mem.Pokeb(lTemp, Inc8(_mem.Peekb(lTemp)));
                         return 23;
 
                     }
                 case 53: // DEC (ID+d)
                     {
                         lTemp = Id_d();
-                        _mem.pokeb(lTemp, Dec8(_mem.peekb(lTemp)));
+                        _mem.Pokeb(lTemp, Dec8(_mem.Peekb(lTemp)));
                         return 23;
 
                     }
                 case 54: // LD (ID+d),n
                     {
                         lTemp = Id_d();
-                        _mem.pokeb(lTemp, Nxtpcb());
+                        _mem.Pokeb(lTemp, Nxtpcb());
                         return 19;
 
                     }
@@ -6213,7 +6211,7 @@ namespace Csharp81
                     }
                 case 70: // LD B,(ID+d)
                     {
-                        regB = (int)_mem.peekb(Id_d());
+                        regB = (int)_mem.Peekb(Id_d());
                         return 19;
 
                     }
@@ -6239,7 +6237,7 @@ namespace Csharp81
                     }
                 case 78: // LD C,(ID+d)
                     {
-                        regC = (int)_mem.peekb(Id_d());
+                        regC = (int)_mem.Peekb(Id_d());
                         return 19;
 
                     }
@@ -6265,7 +6263,7 @@ namespace Csharp81
                     }
                 case 86: // LD D,(ID+d)
                     {
-                        SetD(_mem.peekb(Id_d()));
+                        SetD(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6291,7 +6289,7 @@ namespace Csharp81
                     }
                 case 94: // LD E,(ID+d)
                     {
-                        SetE(_mem.peekb(Id_d()));
+                        SetE(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6340,7 +6338,7 @@ namespace Csharp81
                     }
                 case 102: // LD H,(ID+d)
                     {
-                        SetH(_mem.peekb(Id_d()));
+                        SetH(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6387,7 +6385,7 @@ namespace Csharp81
                     }
                 case 110: // LD L,(ID+d)
                     {
-                        SetL(_mem.peekb(Id_d()));
+                        SetL(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6399,37 +6397,37 @@ namespace Csharp81
                     }
                 case 112: // LD (ID+d),B
                     {
-                        _mem.pokeb(Id_d(), regB);
+                        _mem.Pokeb(Id_d(), regB);
                         return 19;
 
                     }
                 case 113: // LD (ID+d),C
                     {
-                        _mem.pokeb(Id_d(), regC);
+                        _mem.Pokeb(Id_d(), regC);
                         return 19;
 
                     }
                 case 114: // LD (ID+d),D
                     {
-                        _mem.pokeb(Id_d(), GetD());
+                        _mem.Pokeb(Id_d(), GetD());
                         return 19;
 
                     }
                 case 115: // LD (ID+d),E
                     {
-                        _mem.pokeb(Id_d(), GetE());
+                        _mem.Pokeb(Id_d(), GetE());
                         return 19;
 
                     }
                 case 116: // LD (ID+d),H
                     {
-                        _mem.pokeb(Id_d(), GetH());
+                        _mem.Pokeb(Id_d(), GetH());
                         return 19;
 
                     }
                 case 117: // LD (ID+d),L
                     {
-                        _mem.pokeb(Id_d(), GetL());
+                        _mem.Pokeb(Id_d(), GetL());
                         return 19;
 
                     }
@@ -6440,7 +6438,7 @@ namespace Csharp81
                     }
                 case 119: // LD (ID+d),A
                     {
-                        _mem.pokeb(Id_d(), regA);
+                        _mem.Pokeb(Id_d(), regA);
                         return 19;
 
                     }
@@ -6466,7 +6464,7 @@ namespace Csharp81
                     }
                 case 126: // LD A,(ID+d)
                     {
-                        regA = (int)_mem.peekb(Id_d());
+                        regA = (int)_mem.Peekb(Id_d());
                         return 19;
 
                     }
@@ -6501,7 +6499,7 @@ namespace Csharp81
                     }
                 case 134: // ADD A,(ID+d)
                     {
-                        Add_a(_mem.peekb(Id_d()));
+                        Add_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6527,7 +6525,7 @@ namespace Csharp81
                     }
                 case 142: // ADC A,(ID+d)
                     {
-                        Adc_a(_mem.peekb(Id_d()));
+                        Adc_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6553,7 +6551,7 @@ namespace Csharp81
                     }
                 case 150: // SUB (ID+d)
                     {
-                        Sub_a(_mem.peekb(Id_d()));
+                        Sub_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6579,7 +6577,7 @@ namespace Csharp81
                     }
                 case 158: // SBC A,(ID+d)
                     {
-                        Sbc_a(_mem.peekb(Id_d()));
+                        Sbc_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6614,7 +6612,7 @@ namespace Csharp81
                     }
                 case 166: // AND (ID+d)
                     {
-                        And_a(_mem.peekb(Id_d()));
+                        And_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6640,7 +6638,7 @@ namespace Csharp81
                     }
                 case 174: // XOR (ID+d)
                     {
-                        Xor_a(_mem.peekb(Id_d()));
+                        Xor_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6666,7 +6664,7 @@ namespace Csharp81
                     }
                 case 182: // OR (ID+d)
                     {
-                        Or_a(_mem.peekb(Id_d()));
+                        Or_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6692,7 +6690,7 @@ namespace Csharp81
                     }
                 case 190: // CP (ID+d)
                     {
-                        Cp_a(_mem.peekb(Id_d()));
+                        Cp_a(_mem.Peekb(Id_d()));
                         return 19;
 
                     }
@@ -6749,8 +6747,8 @@ namespace Csharp81
                 case 227: // EX (SP),ID
                     {
                         lTemp = regID;
-                        regID = (int)_mem.peekw(regSP);
-                        _mem.pokew(regSP, lTemp);
+                        regID = (int)_mem.Peekw(regSP);
+                        _mem.Pokew(regSP, lTemp);
                         return 23;
 
                     }
@@ -6835,7 +6833,7 @@ namespace Csharp81
         public int Nxtpcw()
         {
             int nxtpcwRet = default;
-            nxtpcwRet = _mem.peekb(regPC) + _mem.peekb(regPC + 1) * 256;
+            nxtpcwRet = _mem.Peekb(regPC) + _mem.Peekb(regPC + 1) * 256;
             regPC = regPC + 2;
             return nxtpcwRet;
         }
@@ -6843,7 +6841,7 @@ namespace Csharp81
         public int Nxtpcb()
         {
             int nxtpcbRet = default;
-            nxtpcbRet = _mem.peekb(regPC);
+            nxtpcbRet = _mem.Peekb(regPC);
             regPC = regPC + 1;
             return nxtpcbRet;
         }
@@ -7009,11 +7007,11 @@ namespace Csharp81
 
             _zx81.lHiresLoc = 0;
             for (iCounter = 0; iCounter <= 767; iCounter++)
-                _zx81.sLastScreen[iCounter] = 0;
+                _zx81.LastScreen[iCounter] = 0;
             for (iCounter = 0; iCounter <= 6143; iCounter++)
                 _zx81.gcBufferBits[iCounter] = 0;
             _zx81.ClearScreen();
-            // frmMainWnd.Cls
+
         }
 
         public void Outb(int port, int outbyte, int tstates = 0)
@@ -7034,7 +7032,7 @@ namespace Csharp81
             {
                 _zx81.bInputWait = false;
                 _zx81.bBooting = false;
-                if ((_mem.peekb(16443) & 128) == 128)
+                if ((_mem.Peekb(16443) & 128) == 128)
                     _zx81.ShowDisplay(true);
                 else
                     _zx81.ShowDisplay(false);
@@ -7050,21 +7048,21 @@ namespace Csharp81
                 // port = glMemAddrDiv256(port And &HFF00&)
                 port = (int)((port & 0xFF00L) >> 8);
                 if ((port & 1) == 0)
-                    res = res & _kb.keyCAPS_V;
+                    res = res & _zx81.keyCAPS_V;
                 if ((port & 2) == 0)
-                    res = res & _kb.keyA_G;
+                    res = res & _zx81.keyA_G;
                 if ((port & 4) == 0)
-                    res = res & _kb.keyQ_T;
+                    res = res & _zx81.keyQ_T;
                 if ((port & 8) == 0)
-                    res = res & _kb.key1_5;
+                    res = res & _zx81.key1_5;
                 if ((port & 16) == 0)
-                    res = res & _kb.key6_0;
+                    res = res & _zx81.key6_0;
                 if ((port & 32) == 0)
-                    res = res & _kb.keyY_P;
+                    res = res & _zx81.keyY_P;
                 if ((port & 64) == 0)
-                    res = res & _kb.keyH_ENT;
+                    res = res & _zx81.keyH_ENT;
                 if ((port & 128) == 0)
-                    res = res & _kb.keyB_SPC;
+                    res = res & _zx81.keyB_SPC;
                 // // Bit7 of the port FE is always 0 on the zx81 (or so it appears)
                 res = res & 127;
             }

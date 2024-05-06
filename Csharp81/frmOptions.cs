@@ -11,7 +11,7 @@ using System.Drawing.Imaging;
 
 namespace Csharp81
 {
-    public partial class frmOptions : Form
+    public partial class FrmOptions : Form
     {
 
         public Color oldBackColour;
@@ -21,9 +21,9 @@ namespace Csharp81
 
         private Boolean _bHideInFastMode;
         private ZX81 _zx81;
-        private frmMainWnd _frmMainWnd;
+        private FrmMainWnd _frmMainWnd;
 
-        public frmOptions(frmMainWnd frmMainWnd, ZX81 zx81)
+        public FrmOptions(FrmMainWnd frmMainWnd, ZX81 zx81)
         {
             _zx81 = zx81;
             _frmMainWnd = frmMainWnd;   
@@ -31,7 +31,7 @@ namespace Csharp81
            
         }
 
-        private void picBackgroundCol_Click(object sender, EventArgs e)
+        private void PicBackgroundCol_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = this.BackColor;
             if(colorDialog1.ShowDialog() == DialogResult.OK)
@@ -41,7 +41,7 @@ namespace Csharp81
             }
         }
 
-        private void frmOptions_Load(object sender, EventArgs e)
+        private void FrmOptions_Load(object sender, EventArgs e)
         {
             oldBackColour = Properties.Settings.Default.stgBackColour;
             oldForeColour = Properties.Settings.Default.stgForeColour;
@@ -57,7 +57,7 @@ namespace Csharp81
            
         }
 
-        private void picForegroundCol_Click(object sender, EventArgs e)
+        private void PicForegroundCol_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = this.BackColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
@@ -66,7 +66,7 @@ namespace Csharp81
             }
         }
 
-        private void picBorderCol_Click(object sender, EventArgs e)
+        private void PicBorderCol_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = this.BackColor;
             if(colorDialog1.ShowDialog() == DialogResult.OK) 
@@ -75,7 +75,7 @@ namespace Csharp81
             }
         }
 
-        private void picFastmodeCol_Click(object sender, EventArgs e)
+        private void PicFastmodeCol_Click(object sender, EventArgs e)
         {
             colorDialog1.Color = this.BackColor;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
@@ -86,7 +86,7 @@ namespace Csharp81
 
      
 
-        private void btnOK_Click(object sender, EventArgs e)
+        private void BtnOK_Click(object sender, EventArgs e)
         {
            
             _zx81.backGroundColour = picBackgroundCol.BackColor;
@@ -112,7 +112,7 @@ namespace Csharp81
             this.Close();
         }
 
-        private void btnPreview_Click(object sender, EventArgs e)
+        private void BtnPreview_Click(object sender, EventArgs e)
         {
             _zx81.backGroundColour = picBackgroundCol.BackColor;
             _zx81.foreGroundColour = picForegroundCol.BackColor;
@@ -130,7 +130,7 @@ namespace Csharp81
             _frmMainWnd.Refresh();
         }
 
-        private void btnCancel_Click(object sender, EventArgs e)
+        private void BtnCancel_Click(object sender, EventArgs e)
         {
             _zx81.backGroundColour = oldBackColour;
             _zx81.foreGroundColour = oldForeColour;

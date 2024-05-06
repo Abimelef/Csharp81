@@ -1,6 +1,6 @@
 ﻿namespace Csharp81
 {
-    partial class frmOptions
+    partial class FrmOptions
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmOptions));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmOptions));
             this.Panel1 = new System.Windows.Forms.Panel();
             this.lblFastModeCol = new System.Windows.Forms.Label();
             this.Label3 = new System.Windows.Forms.Label();
@@ -108,7 +108,7 @@
             this.picFastmodeCol.Size = new System.Drawing.Size(62, 23);
             this.picFastmodeCol.TabIndex = 3;
             this.picFastmodeCol.TabStop = false;
-            this.picFastmodeCol.Click += new System.EventHandler(this.picFastmodeCol_Click);
+            this.picFastmodeCol.Click += new System.EventHandler(this.PicFastmodeCol_Click);
             // 
             // picBorderCol
             // 
@@ -118,7 +118,7 @@
             this.picBorderCol.Size = new System.Drawing.Size(62, 23);
             this.picBorderCol.TabIndex = 2;
             this.picBorderCol.TabStop = false;
-            this.picBorderCol.Click += new System.EventHandler(this.picBorderCol_Click);
+            this.picBorderCol.Click += new System.EventHandler(this.PicBorderCol_Click);
             // 
             // picForegroundCol
             // 
@@ -128,7 +128,7 @@
             this.picForegroundCol.Size = new System.Drawing.Size(62, 23);
             this.picForegroundCol.TabIndex = 1;
             this.picForegroundCol.TabStop = false;
-            this.picForegroundCol.Click += new System.EventHandler(this.picForegroundCol_Click);
+            this.picForegroundCol.Click += new System.EventHandler(this.PicForegroundCol_Click);
             // 
             // picBackgroundCol
             // 
@@ -138,7 +138,7 @@
             this.picBackgroundCol.Size = new System.Drawing.Size(62, 23);
             this.picBackgroundCol.TabIndex = 0;
             this.picBackgroundCol.TabStop = false;
-            this.picBackgroundCol.Click += new System.EventHandler(this.picBackgroundCol_Click);
+            this.picBackgroundCol.Click += new System.EventHandler(this.PicBackgroundCol_Click);
             // 
             // btnOK
             // 
@@ -148,7 +148,7 @@
             this.btnOK.TabIndex = 3;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
-            this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            this.btnOK.Click += new System.EventHandler(this.BtnOK_Click);
             // 
             // btnPreview
             // 
@@ -158,7 +158,7 @@
             this.btnPreview.TabIndex = 4;
             this.btnPreview.Text = "Preview";
             this.btnPreview.UseVisualStyleBackColor = true;
-            this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
+            this.btnPreview.Click += new System.EventHandler(this.BtnPreview_Click);
             // 
             // btnCancel
             // 
@@ -168,7 +168,7 @@
             this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
             // 
             // frmOptions
             // 
@@ -182,7 +182,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmOptions";
             this.Text = "Screen Colours";
-            this.Load += new System.EventHandler(this.frmOptions_Load);
+            this.Load += new System.EventHandler(this.FrmOptions_Load);
             this.Panel1.ResumeLayout(false);
             this.Panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picFastmodeCol)).EndInit();
