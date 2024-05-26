@@ -39,10 +39,11 @@
             showToolbarToolStripMenuItem = new ToolStripMenuItem();
             allowWritesToShadowRom816KAreaToolStripMenuItem = new ToolStripMenuItem();
             hideScreenInFastModeToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem5 = new ToolStripMenuItem();
+            macrosToolStripMenuItem1 = new ToolStripMenuItem();
             toolStripMenuItem4 = new ToolStripMenuItem();
             zX81KeyboardToolStripMenuItem = new ToolStripMenuItem();
             aboutC81ToolStripMenuItem = new ToolStripMenuItem();
-            toolStripMenuItem5 = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripMenuItem();
             picDisplay = new PictureBox();
             toolStrip1 = new ToolStrip();
@@ -56,7 +57,7 @@
             // menuStrip1
             // 
             menuStrip1.ImageScalingSize = new Size(24, 24);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem3, toolStripMenuItem4, toolStripMenuItem5, toolStripMenuItem2 });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { toolStripMenuItem1, toolStripMenuItem3, toolStripMenuItem5, toolStripMenuItem4, toolStripMenuItem2 });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(286, 24);
@@ -125,6 +126,20 @@
             hideScreenInFastModeToolStripMenuItem.Text = "&Hide Screen in Fast Mode ";
             hideScreenInFastModeToolStripMenuItem.Click += HideScreenInFastModeToolStripMenuItem_Click;
             // 
+            // toolStripMenuItem5
+            // 
+            toolStripMenuItem5.DropDownItems.AddRange(new ToolStripItem[] { macrosToolStripMenuItem1 });
+            toolStripMenuItem5.Name = "toolStripMenuItem5";
+            toolStripMenuItem5.Size = new Size(46, 20);
+            toolStripMenuItem5.Text = "Tools";
+            // 
+            // macrosToolStripMenuItem1
+            // 
+            macrosToolStripMenuItem1.Name = "macrosToolStripMenuItem1";
+            macrosToolStripMenuItem1.Size = new Size(113, 22);
+            macrosToolStripMenuItem1.Text = "Macros";
+            macrosToolStripMenuItem1.Click += macrosToolStripMenuItem1_Click;
+            // 
             // toolStripMenuItem4
             // 
             toolStripMenuItem4.DropDownItems.AddRange(new ToolStripItem[] { zX81KeyboardToolStripMenuItem, aboutC81ToolStripMenuItem });
@@ -145,11 +160,6 @@
             aboutC81ToolStripMenuItem.Size = new Size(180, 22);
             aboutC81ToolStripMenuItem.Text = "&About C#81";
             aboutC81ToolStripMenuItem.Click += AboutC81ToolStripMenuItem_Click;
-            // 
-            // toolStripMenuItem5
-            // 
-            toolStripMenuItem5.Name = "toolStripMenuItem5";
-            toolStripMenuItem5.Size = new Size(12, 20);
             // 
             // toolStripMenuItem2
             // 
@@ -246,5 +256,6 @@
         private ToolStrip toolStrip1;
         internal ToolStripButton tsbReset;
         internal ToolStripButton tsbMemoCalc;
+        private ToolStripMenuItem macrosToolStripMenuItem1;
     }
 }

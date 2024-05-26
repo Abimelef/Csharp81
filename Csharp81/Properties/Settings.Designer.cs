@@ -142,5 +142,27 @@ namespace Csharp81.Properties {
                 this["stgFormSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection stgMacros {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["stgMacros"]));
+            }
+            set {
+                this["stgMacros"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection stgMacroDesriptions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["stgMacroDesriptions"]));
+            }
+            set {
+                this["stgMacroDesriptions"] = value;
+            }
+        }
     }
 }

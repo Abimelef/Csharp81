@@ -30,8 +30,9 @@ namespace Csharp81
         public void Pokeb(int addr, int newByte)
         {
             if (addr >= 16384)
-                // // RAM
-                mem[addr] = (byte)(newByte);
+            {
+                 mem[addr] = (byte)(newByte);
+            }
             else if (Properties.Settings.Default.stgAllowWritesToRom)
             {
                 // // Writing to the Shadow ROM area is permitted by the settings...

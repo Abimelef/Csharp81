@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Runtime.InteropServices;
 
 namespace Csharp81
 {
+
     public partial class FrmMainWnd : Form
     {
         private ZX81 _zx81;
@@ -215,7 +205,54 @@ namespace Csharp81
 
         }
 
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            _zx81.SimulateKeyPresses("O16389^.100#A#");  //POKE 16389,100 Newline NEW Newline.
 
 
+        }
+
+        private void loadMazogsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _zx81.SimulateKeyPresses("J^PMAZOGS^P#");
+        }
+
+        private void test2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Collections.Specialized.StringCollection myCol = new System.Collections.Specialized.StringCollection();
+
+            // Add a range of elements from an array to the end of the StringCollection.
+            String[] myArr = new String[] { "RED", "orange", "yellow", "RED", "green", "blue", "RED", "indigo", "violet", "RED","abc","bnm","jkl" };
+            myCol.AddRange(myArr);
+
+            Properties.Settings.Default.stgMacros = myCol;
+            Properties.Settings.Default.stgMacroDesriptions  = myCol;
+            Properties.Settings.Default.Save();
+
+        }
+
+        private void stgsToArrayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.stgMacros.Clear();
+            Properties.Settings.Default.stgMacroDesriptions.Clear();
+            Properties.Settings.Default.Save();
+        }
+
+        private void macrosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmMacros frmMacros = new frmMacros();
+            frmMacros.ShowDialog();
+        }
+
+        private void macrosToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            frmMacros frmMacros = new frmMacros();
+            frmMacros.ShowDialog();
+            if (frmMacros.returnMacroString != "")
+            {
+                _zx81.SimulateKeyPresses(frmMacros.returnMacroString);
+            }
+        }
     }
 }

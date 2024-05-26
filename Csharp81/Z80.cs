@@ -12,7 +12,6 @@ namespace Csharp81
     {
 
 
-
         // /*******************************************************************************
         // modZ80.bas within vb81.vbp
         // 
@@ -43,8 +42,6 @@ namespace Csharp81
         // Ported to C# .NET 6.0  by Allan Macpherson Feb 2024 
         // GOTOs and labels replaced by CASE statements as the speed improvement not needed
         // on a 2024 PC :-)
-
-
 
         private int regA;
         private int regHL;
@@ -4001,6 +3998,15 @@ namespace Csharp81
 
                 if (regPC == 0)
                     _zx81.bBooting = true;
+
+                //Display routine hack pause command
+                if (regPC == 0x2A9)
+                {
+                    Outb(0, regA);
+                    regPC = 0x229;
+                }
+
+
                 if (local_tstates >= 0L)
                 {
                     // // Trigger an interrupt
@@ -7027,12 +7033,16 @@ namespace Csharp81
                 _zx81.bInputWait = true;
                 _zx81.bBooting = false;
                 _zx81.ShowDisplay(true);
+                if (_mem.Peekb(SysVars.KB_DEBOUNCE) == 255)
+                {
+                    _mem.Pokeb(SysVars.KB_DEBOUNCE, outbyte);
+                }
             }
             else if (port == 1)
             {
                 _zx81.bInputWait = false;
                 _zx81.bBooting = false;
-                if ((_mem.Peekb(16443) & 128) == 128)
+                if ((_mem.Peekb(SysVars.CDFLAG) & 128) == 128)
                     _zx81.ShowDisplay(true);
                 else
                     _zx81.ShowDisplay(false);

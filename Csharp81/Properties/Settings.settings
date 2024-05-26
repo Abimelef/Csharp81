@@ -32,5 +32,11 @@
     <Setting Name="stgFormSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">416, 449</Value>
     </Setting>
+    <Setting Name="stgMacros" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="stgMacroDesriptions" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
