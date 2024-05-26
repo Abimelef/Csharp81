@@ -49,7 +49,6 @@
             toolStrip1 = new ToolStrip();
             tsbReset = new ToolStripButton();
             tsbMemoCalc = new ToolStripButton();
-            fixToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)picDisplay).BeginInit();
             toolStrip1.SuspendLayout();
@@ -143,7 +142,7 @@
             // 
             // toolStripMenuItem4
             // 
-            toolStripMenuItem4.DropDownItems.AddRange(new ToolStripItem[] { zX81KeyboardToolStripMenuItem, aboutC81ToolStripMenuItem, fixToolStripMenuItem });
+            toolStripMenuItem4.DropDownItems.AddRange(new ToolStripItem[] { zX81KeyboardToolStripMenuItem, aboutC81ToolStripMenuItem });
             toolStripMenuItem4.Name = "toolStripMenuItem4";
             toolStripMenuItem4.Size = new Size(44, 20);
             toolStripMenuItem4.Text = "&Help";
@@ -207,13 +206,6 @@
             tsbMemoCalc.Text = "ToolStripButton1";
             tsbMemoCalc.Click += tsbMemoCalc_Click;
             // 
-            // fixToolStripMenuItem
-            // 
-            fixToolStripMenuItem.Name = "fixToolStripMenuItem";
-            fixToolStripMenuItem.Size = new Size(180, 22);
-            fixToolStripMenuItem.Text = "Fix";
-            fixToolStripMenuItem.Click += fixToolStripMenuItem_Click;
-            // 
             // FrmMainWnd
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -265,6 +257,5 @@
         internal ToolStripButton tsbReset;
         internal ToolStripButton tsbMemoCalc;
         private ToolStripMenuItem macrosToolStripMenuItem1;
-        private ToolStripMenuItem fixToolStripMenuItem;
     }
 }
