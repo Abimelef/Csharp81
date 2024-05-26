@@ -223,11 +223,11 @@ namespace Csharp81
             System.Collections.Specialized.StringCollection myCol = new System.Collections.Specialized.StringCollection();
 
             // Add a range of elements from an array to the end of the StringCollection.
-            String[] myArr = new String[] { "RED", "orange", "yellow", "RED", "green", "blue", "RED", "indigo", "violet", "RED","abc","bnm","jkl" };
+            String[] myArr = new String[] { "RED", "orange", "yellow", "RED", "green", "blue", "RED", "indigo", "violet", "RED", "abc", "bnm", "jkl" };
             myCol.AddRange(myArr);
 
             Properties.Settings.Default.stgMacros = myCol;
-            Properties.Settings.Default.stgMacroDesriptions  = myCol;
+            Properties.Settings.Default.stgMacroDescriptions = myCol;
             Properties.Settings.Default.Save();
 
         }
@@ -235,7 +235,7 @@ namespace Csharp81
         private void stgsToArrayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.stgMacros.Clear();
-            Properties.Settings.Default.stgMacroDesriptions.Clear();
+            Properties.Settings.Default.stgMacroDescriptions.Clear();
             Properties.Settings.Default.Save();
         }
 
@@ -253,6 +253,20 @@ namespace Csharp81
             {
                 _zx81.SimulateKeyPresses(frmMacros.returnMacroString);
             }
+        }
+
+        private void fixToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Collections.Specialized.StringCollection myCol = new System.Collections.Specialized.StringCollection();
+
+            // Add a range of elements from an array to the end of the StringCollection.
+            String[] myArr = new String[] { "one", "two", "three", "four"};
+            myCol.AddRange(myArr);
+
+            Properties.Settings.Default.stgMacros = myCol;
+            Properties.Settings.Default.stgMacroDescriptions = myCol;
+            Properties.Settings.Default.Save();
+
         }
     }
 }

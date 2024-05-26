@@ -2005,35 +2005,36 @@ namespace Csharp81
 
         private void processKeyPressString()
         {
-          //  if (doKeyPressesDelay == 0)  //only send a keypress every 5th interrupt 
-                if(bInputWait==true)
+            //if the key to be processed is <shift> but there is no key after it return
+            if(ASCIIValues[keyPressPosition] == 94 & keyPressPosition == ASCIIValues.Length - 1)
             {
-                doKeyPressesDelay = doKeyPressesDelayInitialValue;  //reset delay
+                keyPressPosition = 0;
+                doKeyPresses = false;
+                return;
+            }
 
+            if(bInputWait==true)
+            {
+     
                 if (down)
                 {
-                    if (ASCIIValues[keyPressPosition] == 35)
-                    {
-                        ASCIIValues[keyPressPosition] = 13;
-                    }
-
                     if (ASCIIValues[keyPressPosition] == 94)  //shifted key press
                     {
                         keyPressPosition = keyPressPosition + 1;
-                        if (ASCIIValues[keyPressPosition] == 13) //SHIFT + RETURN key down
+                        if (ASCIIValues[keyPressPosition] == 35) //SHIFT + RETURN key down
                         {
                             doEnterKey(true);
                         }
-                        else
+                        else  //shit plus some other key 
                         {
                             doAscKey(true, true, ASCIIValues[keyPressPosition]);
                         }
                     }
                     else  //not a shifted keypress
                     {
-                        if (ASCIIValues[keyPressPosition] == 13)
+                        if (ASCIIValues[keyPressPosition] == 35)
                         {
-                            doEnterKey(false);  //RETURN Key down
+                            doEnterKey(false);  //newline Key down
 
                         }
                         else
@@ -2043,9 +2044,16 @@ namespace Csharp81
                     }
                     down = false;
                 }
-                else
+                else //key up
                 {
-                    doAscKey(false, false, ASCIIValues[keyPressPosition]);
+                    if (ASCIIValues[keyPressPosition] == 35)
+                    {
+                        doAscKey(false, false, 13);  //newline released 
+                    }
+                    else
+                    {
+                        doAscKey(false, false, ASCIIValues[keyPressPosition]);
+                    }
                     keyPressPosition = keyPressPosition + 1;
                     if (keyPressPosition == ASCIIValues.Length)
                     {
@@ -2057,10 +2065,7 @@ namespace Csharp81
 
                 }
             }
-            else
-            {
-                doKeyPressesDelay = doKeyPressesDelay - 1;
-            }
+
         }
 
 
@@ -2400,6 +2405,9 @@ namespace Csharp81
         public void SimulateKeyPresses(string keyPresses)
         {
             ASCIIValues = Encoding.ASCII.GetBytes(keyPresses);
+            
+            //when doKeyPresses is true the interrupt handling room will feed the chaacters of ASCIIValues to
+            //the enter key routines so that macros can be run
             doKeyPresses = true;    
         }
 

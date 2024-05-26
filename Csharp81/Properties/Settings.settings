@@ -35,7 +35,7 @@
     <Setting Name="stgMacros" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="stgMacroDesriptions" Type="System.Collections.Specialized.StringCollection" Scope="User">
+    <Setting Name="stgMacroDescriptions" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

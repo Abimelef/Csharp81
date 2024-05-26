@@ -38,6 +38,7 @@
             tbMacroDescription = new TextBox();
             btnEdit = new Button();
             btnCancelEdit = new Button();
+            label1 = new Label();
             SuspendLayout();
             // 
             // btnRunMacro
@@ -74,12 +75,12 @@
             // chKeypresses
             // 
             chKeypresses.Text = "Keypresses";
-            chKeypresses.Width = 100;
+            chKeypresses.Width = 150;
             // 
             // chDescription
             // 
             chDescription.Text = "Description";
-            chDescription.Width = 200;
+            chDescription.Width = 250;
             // 
             // btnAdd
             // 
@@ -94,16 +95,18 @@
             // tbMacro
             // 
             tbMacro.Location = new Point(12, 239);
+            tbMacro.MaxLength = 100;
             tbMacro.Name = "tbMacro";
-            tbMacro.Size = new Size(135, 23);
+            tbMacro.Size = new Size(148, 23);
             tbMacro.TabIndex = 5;
             tbMacro.KeyDown += tbMacro_KeyDown;
             // 
             // tbMacroDescription
             // 
-            tbMacroDescription.Location = new Point(153, 239);
+            tbMacroDescription.Location = new Point(166, 239);
+            tbMacroDescription.MaxLength = 200;
             tbMacroDescription.Name = "tbMacroDescription";
-            tbMacroDescription.Size = new Size(331, 23);
+            tbMacroDescription.Size = new Size(318, 23);
             tbMacroDescription.TabIndex = 6;
             tbMacroDescription.KeyDown += tbMacroDescription_KeyDown;
             // 
@@ -129,11 +132,21 @@
             btnCancelEdit.Visible = false;
             btnCancelEdit.Click += btnCancelEdit_Click;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(12, 265);
+            label1.Name = "label1";
+            label1.Size = new Size(218, 15);
+            label1.TabIndex = 9;
+            label1.Text = "Use ^ for SHIFT and # for NEWLINE keys";
+            // 
             // frmMacros
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(642, 292);
+            ClientSize = new Size(642, 305);
+            Controls.Add(label1);
             Controls.Add(btnCancelEdit);
             Controls.Add(btnEdit);
             Controls.Add(tbMacroDescription);
@@ -160,5 +173,6 @@
         private TextBox tbMacroDescription;
         private Button btnEdit;
         private Button btnCancelEdit;
+        private Label label1;
     }
 }

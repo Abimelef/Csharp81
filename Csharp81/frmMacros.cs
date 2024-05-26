@@ -26,7 +26,7 @@ namespace Csharp81
             {
                 lvMacros.Items.Clear();
                 macros = Properties.Settings.Default.stgMacros.Cast<string>().ToList();
-                macroDescriptions = Properties.Settings.Default.stgMacroDesriptions.Cast<string>().ToList();
+                macroDescriptions = Properties.Settings.Default.stgMacroDescriptions.Cast<string>().ToList();
 
                 for (int n = 0; n < macros.Count; n++)
                 {
@@ -50,11 +50,11 @@ namespace Csharp81
                     Properties.Settings.Default.stgMacros.Add(tbMacro.Text);
                     if (tbMacroDescription.Text != "")
                     {
-                        Properties.Settings.Default.stgMacroDesriptions.Add(tbMacroDescription.Text);
+                        Properties.Settings.Default.stgMacroDescriptions.Add(tbMacroDescription.Text);
                     }
                     else
                     {
-                        Properties.Settings.Default.stgMacros.Add("");
+                        Properties.Settings.Default.stgMacroDescriptions.Add("");
                     }
                 }
                 else
@@ -62,13 +62,13 @@ namespace Csharp81
                     Properties.Settings.Default.stgMacros[editingMacroNumber] = tbMacro.Text;
                     if (tbMacroDescription.Text != "")
                     {
-                        Properties.Settings.Default.stgMacroDesriptions[editingMacroNumber] = tbMacroDescription.Text;
+                        Properties.Settings.Default.stgMacroDescriptions[editingMacroNumber] = tbMacroDescription.Text;
                     }
                     else
                     {
-                        Properties.Settings.Default.stgMacroDesriptions[editingMacroNumber] = "";
+                        Properties.Settings.Default.stgMacroDescriptions[editingMacroNumber] = "";
                     }
-
+                    editButtonOnOff(false);
                     editingMacro = false;
                 }
 
@@ -100,9 +100,9 @@ namespace Csharp81
         private void updateStoredMacrosinSettings()
         {
             Properties.Settings.Default.stgMacros.Clear();
-            Properties.Settings.Default.stgMacroDesriptions.Clear();
+            Properties.Settings.Default.stgMacroDescriptions.Clear();
             Properties.Settings.Default.stgMacros.AddRange(macros.ToArray());
-            Properties.Settings.Default.stgMacroDesriptions.AddRange(macroDescriptions.ToArray());
+            Properties.Settings.Default.stgMacroDescriptions.AddRange(macroDescriptions.ToArray());
             Properties.Settings.Default.Save();
         }
 
@@ -183,7 +183,15 @@ namespace Csharp81
         {
                 btnCancelEdit.Visible = editOn;
                 btnRunMacro.Visible = !editOn;
-                btnDeleteMacro.Visible = !editOn; 
-       }
+                btnDeleteMacro.Visible = !editOn;
+            if (editOn)
+            {
+                btnAdd.Text = "Update";
+            }
+            else
+            {
+                btnAdd.Text = "Add";
+            }
+        }
     }
 }

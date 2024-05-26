@@ -156,12 +156,12 @@ namespace Csharp81.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection stgMacroDesriptions {
+        public global::System.Collections.Specialized.StringCollection stgMacroDescriptions {
             get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["stgMacroDesriptions"]));
+                return ((global::System.Collections.Specialized.StringCollection)(this["stgMacroDescriptions"]));
             }
             set {
-                this["stgMacroDesriptions"] = value;
+                this["stgMacroDescriptions"] = value;
             }
         }
     }
