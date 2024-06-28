@@ -22,7 +22,18 @@ namespace Csharp81
 
         private void fillMacroList()
         {
-            if (Properties.Settings.Default.stgMacros.Count > 0)
+            if(Properties.Settings.Default.stgMacros is null)
+            {
+                Properties.Settings.Default.stgMacros = new System.Collections.Specialized.StringCollection();  
+            }
+
+            if (Properties.Settings.Default.stgMacroDescriptions is null)
+            {
+                Properties.Settings.Default.stgMacroDescriptions = new System.Collections.Specialized.StringCollection();
+            }
+
+
+            if (Properties.Settings.Default.stgMacros.Count>0)
             {
                 lvMacros.Items.Clear();
                 macros = Properties.Settings.Default.stgMacros.Cast<string>().ToList();
@@ -36,8 +47,6 @@ namespace Csharp81
 
             }
         }
-
-
 
 
         private void btnAdd_Click(object sender, EventArgs e)
